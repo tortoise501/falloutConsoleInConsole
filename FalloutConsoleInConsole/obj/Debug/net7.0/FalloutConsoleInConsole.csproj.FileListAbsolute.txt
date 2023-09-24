@@ -27,3 +27,17 @@ c:/Users/tortoise501/Desktop/falloutConsoleInConsole/FalloutConsoleInConsole/obj
 /home/danylo/Desktop/FCIC/falloutConsoleInConsole/FalloutConsoleInConsole/obj/Debug/net7.0/FalloutConsoleInConsole.pdb
 /home/danylo/Desktop/FCIC/falloutConsoleInConsole/FalloutConsoleInConsole/obj/Debug/net7.0/FalloutConsoleInConsole.genruntimeconfig.cache
 /home/danylo/Desktop/FCIC/falloutConsoleInConsole/FalloutConsoleInConsole/obj/Debug/net7.0/ref/FalloutConsoleInConsole.dll
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\bin\Debug\net7.0\FalloutConsoleInConsole.exe
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\bin\Debug\net7.0\FalloutConsoleInConsole.deps.json
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\bin\Debug\net7.0\FalloutConsoleInConsole.runtimeconfig.json
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\bin\Debug\net7.0\FalloutConsoleInConsole.dll
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\bin\Debug\net7.0\FalloutConsoleInConsole.pdb
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.AssemblyInfoInputs.cache
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.AssemblyInfo.cs
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.csproj.CoreCompileInputs.cache
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.dll
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\refint\FalloutConsoleInConsole.dll
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.pdb
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.genruntimeconfig.cache
+C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\ref\FalloutConsoleInConsole.dll

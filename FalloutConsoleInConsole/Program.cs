@@ -44,6 +44,12 @@ class Program
     columnByElements = GenerateColumn(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
 
     Dictionary<int, int> posToElement = MapPosToElements(columnByElements);
+    Console.WriteLine("press Enter to play or any other key to exit");
+    ConsoleKey key = Console.ReadKey().Key;
+    if (key != ConsoleKey.Enter)
+    {
+      return;
+    }
     while (true)
     {
       Console.Clear();
@@ -81,7 +87,7 @@ class Program
         }
       }
 
-      var key = Console.ReadKey().Key;
+      key = Console.ReadKey().Key;
 
 
       switch (key)
