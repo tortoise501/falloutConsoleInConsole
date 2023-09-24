@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj": {}
+    "c:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj": {}
   },
   "projects": {
-    "C:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj": {
+    "c:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj",
+        "projectUniqueName": "c:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj",
         "projectName": "FalloutConsoleInConsole",
-        "projectPath": "C:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj",
+        "projectPath": "c:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj",
         "packagesPath": "C:\\Users\\tortoise501\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\obj\\",
+        "outputPath": "c:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
