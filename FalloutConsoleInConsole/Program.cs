@@ -44,6 +44,8 @@ class Program
     columnByElements = GenerateColumn(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
 
     Dictionary<int, int> posToElement = MapPosToElements(columnByElements);
+    Console.WriteLine("test");
+    Console.ReadKey();
     while (true)
     {
       Console.Clear();
