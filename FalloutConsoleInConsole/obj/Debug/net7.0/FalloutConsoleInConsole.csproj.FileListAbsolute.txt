@@ -1,0 +1,14 @@
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\bin\Debug\net7.0\FalloutConsoleInConsole.exe
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\bin\Debug\net7.0\FalloutConsoleInConsole.deps.json
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\bin\Debug\net7.0\FalloutConsoleInConsole.runtimeconfig.json
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\bin\Debug\net7.0\FalloutConsoleInConsole.dll
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\bin\Debug\net7.0\FalloutConsoleInConsole.pdb
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\FalloutConsoleInConsole.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\FalloutConsoleInConsole.AssemblyInfoInputs.cache
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\FalloutConsoleInConsole.AssemblyInfo.cs
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\FalloutConsoleInConsole.csproj.CoreCompileInputs.cache
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\FalloutConsoleInConsole.dll
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\refint\FalloutConsoleInConsole.dll
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\FalloutConsoleInConsole.pdb
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\FalloutConsoleInConsole.genruntimeconfig.cache
+c:\Users\tortoise501\Desktop\falloutConsoleInConsole\FalloutConsoleInConsole\obj\Debug\net7.0\ref\FalloutConsoleInConsole.dll
