@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "6+oJjPQKN3tDOUSn1nDNAJxbJGTFz0TAr0SqHnGaabPMmC3ZrTnjumfk+V1PoxrvxIcL7To/Px0UC/c4NTX/lg==",
+  "dgSpecHash": "OtJV1WLHYVc5UG2YglbgkSjK955F+93qskCq05GThikpz68YnMVOAAWc89Y/VAYAKh9TkRcwyvu1MyERC2rA0g==",
   "success": true,
-  "projectFilePath": "c:\\Users\\tortoise501\\Desktop\\falloutConsoleInConsole\\FalloutConsoleInConsole\\FalloutConsoleInConsole.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "/home/danylo/Desktop/FCIC/falloutConsoleInConsole/FalloutConsoleInConsole/FalloutConsoleInConsole.csproj",
+  "expectedPackageFiles": [
+    "/home/danylo/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.11/microsoft.aspnetcore.app.ref.7.0.11.nupkg.sha512"
+  ],
   "logs": []
 }
