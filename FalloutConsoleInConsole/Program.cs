@@ -4,8 +4,6 @@ using System.Reflection.PortableExecutable;
 
 class Program
 {
-
-
   static void Main(string[] args)
   {
     Column column = new Column(9, 16, 4, 4);
