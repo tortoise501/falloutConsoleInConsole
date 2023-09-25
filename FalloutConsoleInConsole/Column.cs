@@ -11,7 +11,7 @@ public class Column
   string[] columnByElements = new string[0];  //array of elements in column
   Dictionary<int, int> posToElement;  //relation between position in column(character index) and element this character belongs to
   Dictionary<int, int> hintWidth;  //hintPositionAndWidth
-  Dictionary<int, ExecutionCode> elementExecutionCode;
+  // Dictionary<int, ExecutionCode> elementExecutionCode = new Dictionary<int, ExecutionCode>();
   int selectorPos = 0;  //selected position(as character index)
 
 
