@@ -105,7 +105,7 @@ class Program
           selectorPos += COLUMN_WIDTH;
           break;
       }
-      selectorPos = Math.Clamp(selectorPos, 0, columnByElements.Length - 1);
+      selectorPos = Math.Clamp(selectorPos, 0, posToElement.Count - 1);
     }
   }
 

@@ -41,3 +41,8 @@ C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj
 C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.pdb
 C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\FalloutConsoleInConsole.genruntimeconfig.cache
 C:\Users\tortoise501\Desktop\falloutConsoleInConsole\falloutconsoleinconsole\obj\Debug\net7.0\ref\FalloutConsoleInConsole.dll
+C:\Users\tortoise501\Desktop\testst\FalloutConsoleInConsole.exe
+C:\Users\tortoise501\Desktop\testst\FalloutConsoleInConsole.deps.json
+C:\Users\tortoise501\Desktop\testst\FalloutConsoleInConsole.runtimeconfig.json
+C:\Users\tortoise501\Desktop\testst\FalloutConsoleInConsole.dll
+C:\Users\tortoise501\Desktop\testst\FalloutConsoleInConsole.pdb
