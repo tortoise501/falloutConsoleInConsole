@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
 public class Column
 {
   static Random rnd = new Random();
