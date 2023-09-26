@@ -69,7 +69,7 @@ static class Constants
 }
 public enum ExecutionCode
 {
-  Wrong,
+  WrongInput,
   Mistake,
   CorrectWord,
   HintLife,

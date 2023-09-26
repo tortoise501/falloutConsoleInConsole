@@ -6,14 +6,23 @@ public class Column
   static Random rnd = new Random();
 
 
+  string[] columnByElements = new string[0];  //array of elements in column
   readonly int COLUMN_WIDTH;
   readonly int COLUMN_HEIGHT;
+
+
+
+  string[] words = new string[0];
+  string rightWord;
   readonly int WORD_LENGTH;
   readonly int WORD_AMOUNT;
 
-  string[] columnByElements = new string[0];  //array of elements in column
+
+
+  int hitPoints = 4;
   Dictionary<int, int> posToElement;  //relation between position in column(character index) and element this character belongs to
   Dictionary<int, int> hintWidth;  //hintPositionAndWidth
+  Dictionary<int, string> posToWord = new Dictionary<int, string>();//position of word to word
   // Dictionary<int, ExecutionCode> elementExecutionCode = new Dictionary<int, ExecutionCode>();
   int selectorPos = 0;  //selected position(as character index)
 
@@ -25,7 +34,9 @@ public class Column
     COLUMN_HEIGHT = height;
     WORD_LENGTH = wordLength;
     WORD_AMOUNT = wordAmount;
-    columnByElements = GenerateColumn(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
+    words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH);
+    rightWord = words[rnd.Next(0, wordAmount)];
+    columnByElements = GenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
     posToElement = MapPosToElements(columnByElements);
     hintWidth = GenerateHintData(columnByElements, COLUMN_WIDTH);
   }
@@ -123,19 +134,84 @@ public class Column
       case ConsoleKey.DownArrow:
         selectorPos += COLUMN_WIDTH;
         break;
+      case ConsoleKey.Enter:
+        int selectedIndex = posToElement[selectorPos];
+        string selectedItem = columnByElements[selectedIndex];
+        ExecuteInput(CheckInput(selectedIndex, selectedItem), selectedIndex, selectedItem);
+        break;
     }
     selectorPos = Math.Clamp(selectorPos, 0, posToElement.Count - 1);
   }
 
+  private ExecutionCode CheckInput(int selectedIndex, string selectedItem)
+  {
+    if (selectedItem == rightWord)//is this right word
+    {
+      return ExecutionCode.CorrectWord;
+    }
+    if (hintWidth.ContainsKey(selectedIndex))//is this a hint
+    {
+      return ExecutionCode.HintDuds;
+      //TODO: Add HintLife execution with certain chance
+    }
+    if (selectedItem.Length > 1)//is it a wrong word
+    {
+      return ExecutionCode.Mistake;
+    }
+    else//then it is a symbol
+    {
+      return ExecutionCode.WrongInput;
+    }
+  }
 
+  private void ExecuteInput(ExecutionCode executionCode, int selectedIndex, string selectedItem)
+  {
+    if (executionCode == ExecutionCode.WrongInput)
+    {
+      return;
+    }
+    if (executionCode == ExecutionCode.Mistake)
+    {
+      hitPoints--;
+      //TODO: function to decrease hit points and gameover if less then 1 hit point  
+    }
+    if (executionCode == ExecutionCode.CorrectWord)
+    {
+      Console.WriteLine("\n\n\nYou won!!!");
+      Environment.Exit(0);
+    }
+    if (executionCode == ExecutionCode.HintDuds)
+    {
+      RemoveDude();
+    }
+    //TODO:Execution for life hint
+  }
+  private void RemoveDude()
+  {
+    if (posToWord.Count == 0)
+    {
+      return;
+    }
+    int randomWordIndex = rnd.Next(0, posToWord.Count);
+    List<int> poses = Enumerable.ToList(posToWord.Keys);
+    int posToReplace = poses[randomWordIndex];
+    string replacement = "";
+    for (int i = 0; i < columnByElements[posToReplace].Length; i++)
+    {
+      replacement += ".";
+    }
+    columnByElements[posToReplace] = replacement;
+    posToWord.Remove(poses[randomWordIndex]);
+  }
 
-  private string[] GenerateColumn(int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
+  //TODO: create system to limit amount of hints for ex. create special symbols 'S' that will be replaced to right parentheses to create hint 
+  private string[] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
   {
     int length = (height * width) - (wordAmount * wordLength) + wordAmount;
     string[] row = new string[length];
 
-    string[] words = GenerateRandomWords(wordAmount, wordLength);
-    int wordi = 0;
+    // words = GenerateRandomWords(wordAmount, wordLength);
+    int wordI = 0;
     HashSet<int> randomWordPos = new HashSet<int>();
     for (int i = 0; i < words.Length; i++)
     {
@@ -147,8 +223,12 @@ public class Column
     {
       if (randomWordPos.Contains(i))
       {
-        row[i] = words[wordi];
-        wordi++;
+        row[i] = words[wordI];
+        if (words[wordI] != rightWord)
+        {
+          posToWord.Add(i, words[wordI]);
+        }
+        wordI++;
       }
       else
       {
@@ -192,6 +272,19 @@ public class Column
     }
     return res;
   }
+
+
+
+
+
+
+
+  /// <summary>
+  ///   returns dictionary where key is start of a hint represented as an index in an element array and value is a length of that hint 
+  /// </summary>
+  /// <param name="elements">array of elements</param>
+  /// <param name="rowWidth">width of each column row</param>
+  /// <returns></returns>
   private Dictionary<int, int> GenerateHintData(string[] elements, int rowWidth)
   {
     Dictionary<int, int> res = new Dictionary<int, int>();
