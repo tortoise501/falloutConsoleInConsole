@@ -2,6 +2,17 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+//TODO ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/*TODOs:
+  -Life Hint
+  -Better hint creation
+  -"frontend" for logging
+    -current selected word display
+    -tabs.. etc
+  -New rendering to render two columns side to side
+    -save render data as an array of rows to render with special symbols for color changing
+    -implement render in other class or in Program.cs 
+*/
 public class Column
 {
   static Random rnd = new Random();
