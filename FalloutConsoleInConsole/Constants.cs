@@ -75,3 +75,9 @@ public enum ExecutionCode
   HintLife,
   HintDuds
 }
+public enum GameState
+{
+  InProgress,
+  Lost,
+  Won
+}

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 public class Column
 {
   static Random rnd = new Random();
@@ -18,7 +19,10 @@ public class Column
   readonly int WORD_AMOUNT;
 
 
+  // public bool isCompeted = false;
+  public GameState gameState { get; private set; } = GameState.InProgress;
 
+  int maxHitPoints = 4;
   int hitPoints = 4;
   Dictionary<int, int> posToElement;  //relation between position in column(character index) and element this character belongs to
   Dictionary<int, int> hintWidth;  //hintPositionAndWidth
@@ -56,6 +60,34 @@ public class Column
       return false;
     }
     return true;
+  }
+
+  public void LoseHitPoint()
+  {
+    hitPoints--;
+    if (hitPoints == 0)
+    {
+      LooseTheGame();
+    }
+  }
+
+  private void LooseTheGame()
+  {
+    gameState = GameState.Lost;
+  }
+
+  public void RenderHitPoints()
+  {
+    Console.Write("[ ");
+    for (int i = 0; i < hitPoints; i++)
+    {
+      Console.Write("\u2580 ");
+    }
+    for (int i = 0; i < maxHitPoints - hitPoints; i++)
+    {
+      Console.Write("  ");
+    }
+    Console.Write("]\n");
   }
 
   public void Render(bool clear = true)
@@ -172,17 +204,20 @@ public class Column
     }
     if (executionCode == ExecutionCode.Mistake)
     {
-      hitPoints--;
-      //TODO: function to decrease hit points and gameover if less then 1 hit point  
+      LoseHitPoint();
+      //TODO: function to decrease hit points and gameover if less then 1 hit point (WIP)
     }
     if (executionCode == ExecutionCode.CorrectWord)
     {
-      Console.WriteLine("\n\n\nYou won!!!");
-      Environment.Exit(0);
+      gameState = GameState.Won;
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
       RemoveDude();
+    }
+    if (executionCode == ExecutionCode.HintLife)
+    {
+      throw new NotImplementedException();
     }
     //TODO:Execution for life hint
   }
