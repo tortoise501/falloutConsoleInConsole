@@ -7,7 +7,7 @@ class Program
   static void Main(string[] args)
   {
     Console.Clear();
-    Column column = new Column(9, 16, 4, 4);
+    Column column = new Column(9, 16, 4, 8);
     if (!column.init())
     {
       return;
@@ -20,19 +20,20 @@ class Program
       Console.Clear();
       column.RenderHitPoints();
       column.Render(false);
+      column.RenderGameLogs();
       if (column.gameState != GameState.InProgress)
       {
         break;
       }
     }
-    if (column.gameState == GameState.Lost)
-    {
-      Console.Write("\n\n\n You lost :(");
-    }
-    else
-    {
-      Console.Write("\n\n\n You won :)");
-    }
+    // if (column.gameState == GameState.Lost)
+    // {
+    //   Console.Write("\n\n\n You lost :(");
+    // }
+    // else
+    // {
+    //   Console.Write("\n\n\n You won :)");
+    // }
   }
 
 

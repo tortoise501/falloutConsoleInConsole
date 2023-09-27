@@ -25,10 +25,17 @@ public class Column
   int maxHitPoints = 4;
   int hitPoints = 4;
   Dictionary<int, int> posToElement;  //relation between position in column(character index) and element this character belongs to
+  /// <summary>
+  /// Key=index as element, value is length in chars
+  /// </summary>
   Dictionary<int, int> hintWidth;  //hintPositionAndWidth
   Dictionary<int, string> posToWord = new Dictionary<int, string>();//position of word to word
   // Dictionary<int, ExecutionCode> elementExecutionCode = new Dictionary<int, ExecutionCode>();
   int selectorPos = 0;  //selected position(as character index)
+
+
+  int logLength = 7;
+  Queue<string> gameLogs = new Queue<string>();
 
 
 
@@ -76,6 +83,23 @@ public class Column
     gameState = GameState.Lost;
   }
 
+  public void RenderGameLogs()
+  {
+    foreach (string LogOutputLine in gameLogs)
+    {
+      Console.Write(LogOutputLine);
+    }
+    Console.WriteLine();
+  }
+  public void AddToGameLogs(string LogOutputLine)
+  {
+    gameLogs.Enqueue(LogOutputLine);
+    if (gameLogs.Count() > logLength)
+    {
+      gameLogs.Dequeue();
+    }
+  }
+
   public void RenderHitPoints()
   {
     Console.Write("[ ");
@@ -101,7 +125,7 @@ public class Column
     int jump;
     for (int i = 0; i < columnByElements.Length; i += jump)
     {
-      jump = 1;
+      jump = 1;//TODO:use private function GetCharsOf();
       List<char> charsToRender = new List<char>();
       if (hintWidth.ContainsKey(i) && posToElement[selectorPos] == i)
       {
@@ -146,6 +170,21 @@ public class Column
     }
   }
 
+  /// <summary>
+  /// Use for hints
+  /// </summary>
+  /// <param name="startingIndex">index of an element in columnByElements</param>
+  /// <returns></returns>
+  public List<char> GetCharsOf(int startingIndex, int length)
+  {
+    List<char> charsToRender = new List<char>();
+    for (int j = 0; j <= length; j++)
+    {
+      List<char> charr = columnByElements[startingIndex + j].ToCharArray().ToList();
+      charsToRender = charsToRender.Concat(charr).ToList();
+    }
+    return charsToRender;
+  }
 
   public void HandleInput()
   {
@@ -204,24 +243,32 @@ public class Column
     }
     if (executionCode == ExecutionCode.Mistake)
     {
+      AddToGameLogs($">{columnByElements[selectedIndex]}\n>Entry Denied\n>Likeness=TODO\n");
       LoseHitPoint();
-      //TODO: function to decrease hit points and gameover if less then 1 hit point (WIP)
     }
     if (executionCode == ExecutionCode.CorrectWord)
     {
+      AddToGameLogs($">{columnByElements[selectedIndex]}\n>Exact match\n>Please Wait\n>while system\n>is accepted");
       gameState = GameState.Won;
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
-      RemoveDude();
+      char[] hint = GetCharsOf(selectedIndex, hintWidth[selectedIndex]).ToArray();
+      AddToGameLogs($">{string.Join("", hint)}\n>Dud removed\n");
+      RemoveDud();
     }
     if (executionCode == ExecutionCode.HintLife)
     {
-      throw new NotImplementedException();
+      AddToGameLogs($"ATTEMPTS RESTORED\n");
+      hitPoints = maxHitPoints;
     }
-    //TODO:Execution for life hint
+    if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
+    {
+      hintWidth.Remove(selectedIndex);
+    }
+
   }
-  private void RemoveDude()
+  private void RemoveDud()
   {
     if (posToWord.Count == 0)
     {
