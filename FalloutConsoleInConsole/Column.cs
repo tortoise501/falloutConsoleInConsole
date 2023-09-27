@@ -17,34 +17,52 @@ public class Column
 {
   static Random rnd = new Random();
 
-
-  string[] columnByElements = new string[0];  //array of elements in column
+  /// <summary>
+  /// Array that store all elements
+  /// Elements are: symbols, words
+  /// </summary>
+  string[] columnByElements = new string[0];
   readonly int COLUMN_WIDTH;
   readonly int COLUMN_HEIGHT;
 
 
 
   string[] words = new string[0];
-  string rightWord;
+  readonly string RIGHT_WORD;
   readonly int WORD_LENGTH;
   readonly int WORD_AMOUNT;
 
 
-  // public bool isCompeted = false;
   public GameState gameState { get; private set; } = GameState.InProgress;
 
-  int maxHitPoints = 4;
-  int hitPoints = 4;
-  Dictionary<int, int> posToElement;  //relation between position in column(character index) and element this character belongs to
+  //*----------------------------------------------------------------------Attempts
+  //TODO: integrate this parameters to constructor
+  int maxAttempts = 4;
+  int attemptsLeft = 4;
+
+  //*----------------------------------------------------------------------Data dictionaries
   /// <summary>
-  /// Key=index as element, value is length in chars
+  /// Key = position(as in char array)
+  /// Value = index(as in element array)
   /// </summary>
-  Dictionary<int, int> hintWidth;  //hintPositionAndWidth
-  Dictionary<int, string> posToWord = new Dictionary<int, string>();//position of word to word
-  // Dictionary<int, ExecutionCode> elementExecutionCode = new Dictionary<int, ExecutionCode>();
+  Dictionary<int, int> posToElement;
+
+  /// <summary>
+  /// Key = Index,
+  /// Value = length of hint
+  /// </summary>
+  Dictionary<int, int> hintData;
+
+  /// <summary>
+  /// Key = index
+  /// Value = Word on that place
+  /// </summary>
+  Dictionary<int, string> posToWord = new Dictionary<int, string>();
+
+
   int selectorPos = 0;  //selected position(as character index)
 
-
+  //*----------------------------------------------------------------------LOG
   int logLength = 7;
   Queue<string> gameLogs = new Queue<string>();
 
@@ -57,10 +75,10 @@ public class Column
     WORD_LENGTH = wordLength;
     WORD_AMOUNT = wordAmount;
     words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH);
-    rightWord = words[rnd.Next(0, wordAmount)];
+    RIGHT_WORD = words[rnd.Next(0, wordAmount)];
     columnByElements = GenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
     posToElement = MapPosToElements(columnByElements);
-    hintWidth = GenerateHintData(columnByElements, COLUMN_WIDTH);
+    hintData = GenerateHintData(columnByElements, COLUMN_WIDTH);
   }
 
   public bool init()
@@ -82,8 +100,8 @@ public class Column
 
   public void LoseHitPoint()
   {
-    hitPoints--;
-    if (hitPoints == 0)
+    attemptsLeft--;
+    if (attemptsLeft == 0)
     {
       LooseTheGame();
     }
@@ -114,11 +132,11 @@ public class Column
   public void RenderHitPoints()
   {
     Console.Write("[ ");
-    for (int i = 0; i < hitPoints; i++)
+    for (int i = 0; i < attemptsLeft; i++)
     {
       Console.Write("\u2580 ");
     }
-    for (int i = 0; i < maxHitPoints - hitPoints; i++)
+    for (int i = 0; i < maxAttempts - attemptsLeft; i++)
     {
       Console.Write("  ");
     }
@@ -138,10 +156,10 @@ public class Column
     {
       jump = 1;//TODO:use private function GetCharsOf();
       List<char> charsToRender = new List<char>();
-      if (hintWidth.ContainsKey(i) && posToElement[selectorPos] == i)
+      if (hintData.ContainsKey(i) && posToElement[selectorPos] == i)
       {
         jump = 0;
-        for (int j = 0; j <= hintWidth[i]; j++)
+        for (int j = 0; j <= hintData[i]; j++)
         {
           List<char> charr = columnByElements[i + j].ToCharArray().ToList();
           charsToRender = charsToRender.Concat(charr).ToList();
@@ -227,11 +245,11 @@ public class Column
 
   private ExecutionCode CheckInput(int selectedIndex, string selectedItem)
   {
-    if (selectedItem == rightWord)//is this right word
+    if (selectedItem == RIGHT_WORD)//is this right word
     {
       return ExecutionCode.CorrectWord;
     }
-    if (hintWidth.ContainsKey(selectedIndex))//is this a hint
+    if (hintData.ContainsKey(selectedIndex))//is this a hint
     {
       return ExecutionCode.HintDuds;
       //TODO: Add HintLife execution with certain chance
@@ -264,18 +282,18 @@ public class Column
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
-      char[] hint = GetCharsOf(selectedIndex, hintWidth[selectedIndex]).ToArray();
+      char[] hint = GetCharsOf(selectedIndex, hintData[selectedIndex]).ToArray();
       AddToGameLogs($">{string.Join("", hint)}\n>Dud removed\n");
       RemoveDud();
     }
     if (executionCode == ExecutionCode.HintLife)
     {
       AddToGameLogs($"ATTEMPTS RESTORED\n");
-      hitPoints = maxHitPoints;
+      attemptsLeft = maxAttempts;
     }
     if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
     {
-      hintWidth.Remove(selectedIndex);
+      hintData.Remove(selectedIndex);
     }
 
   }
@@ -302,8 +320,6 @@ public class Column
   {
     int length = (height * width) - (wordAmount * wordLength) + wordAmount;
     string[] row = new string[length];
-
-    // words = GenerateRandomWords(wordAmount, wordLength);
     int wordI = 0;
     HashSet<int> randomWordPos = new HashSet<int>();
     for (int i = 0; i < words.Length; i++)
@@ -317,7 +333,7 @@ public class Column
       if (randomWordPos.Contains(i))
       {
         row[i] = words[wordI];
-        if (words[wordI] != rightWord)
+        if (words[wordI] != RIGHT_WORD)
         {
           posToWord.Add(i, words[wordI]);
         }
