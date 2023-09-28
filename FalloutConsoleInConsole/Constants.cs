@@ -53,6 +53,12 @@ static class Constants
     '\\',
     '*'
   };
+  static public readonly char[] Parentheses = new char[4]{
+    '}',
+    ')',
+    '>',
+    ']'
+  };
   static public readonly Dictionary<char, char> GetOppositeParentheses = new Dictionary<char, char>()
   {
     {')','('},
