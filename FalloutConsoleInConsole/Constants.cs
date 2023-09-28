@@ -38,12 +38,13 @@ static class Constants
     }
   };
   static public readonly char[] symbols = {
-    '{',
+    // '{',
     '}',
-    '[',
+    // '[',
     ']',
-    '(',
+    // '(',
     ')',
+    //'F',//'F' is a false parenthesis     'S' is start 'E' is end 
     '#',
     '%',
     ',',
@@ -67,6 +68,13 @@ static class Constants
       return false;
   }
 }
+// public enum ElementClass
+// {
+//   Word,
+//   Hint,
+//   Random,
+//   Processed
+// }
 public enum ExecutionCode
 {
   WrongInput,
@@ -80,4 +88,9 @@ public enum GameState
   InProgress,
   Lost,
   Won
+}
+public enum HintType
+{
+  Dud,
+  Attempt
 }

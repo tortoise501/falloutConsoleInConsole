@@ -12,6 +12,7 @@ class Program
     {
       return;
     }
+    Console.Clear();
     column.RenderHitPoints();
     column.Render(false);
     while (true)

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 //TODO ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 /*TODOs:
   -Life Hint
-  -Better hint creation
+  -Better hint creation(WIP)
   -"frontend" for logging
     -current selected word display
     -tabs.. etc
@@ -51,7 +51,12 @@ public class Column
   /// Key = Index,
   /// Value = length of hint
   /// </summary>
-  Dictionary<int, int> hintData;
+  Dictionary<int, int> hintPosData;
+  /// <summary>
+  /// Key = Index,
+  /// Value = Type of hint
+  /// </summary>
+  Dictionary<int, HintType> hintTypeData = new Dictionary<int, HintType>();
 
   /// <summary>
   /// Key = index
@@ -78,7 +83,8 @@ public class Column
     RIGHT_WORD = words[rnd.Next(0, wordAmount)];
     columnByElements = GenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
     posToElement = MapPosToElements(columnByElements);
-    hintData = GenerateHintData(columnByElements, COLUMN_WIDTH);
+    hintPosData = GenerateHintData(columnByElements, COLUMN_WIDTH);
+    // string[] testToDelete = NewGenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
   }
 
   public bool init()
@@ -156,10 +162,10 @@ public class Column
     {
       jump = 1;//TODO:use private function GetCharsOf();
       List<char> charsToRender = new List<char>();
-      if (hintData.ContainsKey(i) && posToElement[selectorPos] == i)
+      if (hintPosData.ContainsKey(i) && posToElement[selectorPos] == i)
       {
         jump = 0;
-        for (int j = 0; j <= hintData[i]; j++)
+        for (int j = 0; j <= hintPosData[i]; j++)
         {
           List<char> charr = columnByElements[i + j].ToCharArray().ToList();
           charsToRender = charsToRender.Concat(charr).ToList();
@@ -249,7 +255,7 @@ public class Column
     {
       return ExecutionCode.CorrectWord;
     }
-    if (hintData.ContainsKey(selectedIndex))//is this a hint
+    if (hintPosData.ContainsKey(selectedIndex))//is this a hint
     {
       return ExecutionCode.HintDuds;
       //TODO: Add HintLife execution with certain chance
@@ -282,7 +288,7 @@ public class Column
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
-      char[] hint = GetCharsOf(selectedIndex, hintData[selectedIndex]).ToArray();
+      char[] hint = GetCharsOf(selectedIndex, hintPosData[selectedIndex]).ToArray();
       AddToGameLogs($">{string.Join("", hint)}\n>Dud removed\n");
       RemoveDud();
     }
@@ -293,7 +299,7 @@ public class Column
     }
     if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
     {
-      hintData.Remove(selectedIndex);
+      hintPosData.Remove(selectedIndex);
     }
 
   }
@@ -315,11 +321,82 @@ public class Column
     posToWord.Remove(poses[randomWordIndex]);
   }
 
+
+
+
+
+
+
+
   //TODO: create system to limit amount of hints for ex. create special symbols 'S' that will be replaced to right parentheses to create hint 
+  // private string[] NewGenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6, int HintAmount = 7)
+  // {
+  //   int AmountOfElements = (height * width) - (wordAmount * wordLength) + wordAmount;
+  //   string[] column = new string[AmountOfElements];
+  //   int wordI = 0;
+  //   ElementClass[] columnByClasses = new ElementClass[(wordAmount + HintAmount) * 2 + 1];//words + elements + spaces after them + 1 before them
+  //   columnByClasses = columnByClasses.Select(x => ElementClass.Random).ToArray();//Convert everything to random
+  //   //Generate columnByClasses list
+  //   int generatedWords = 0;
+  //   int generatedHints = 0;
+  //   for (int i = 1; i < columnByClasses.Length - 1; i += 2)
+  //   {
+  //     int rand = rnd.Next(0, wordAmount + HintAmount);
+  //     if (rand < wordAmount && generatedWords != wordAmount)
+  //     {
+  //       columnByClasses[i] = ElementClass.Word;
+  //     }
+  //     else if (generatedHints != HintAmount)
+  //     {
+  //       columnByClasses[i] = ElementClass.Hint;
+  //     }
+  //     else if (generatedWords != wordAmount)
+  //     {
+  //       columnByClasses[i] = ElementClass.Word;
+  //     }
+  //   }
+  //   //Process columnByClasses list
+  //   int recommendedHintSize = 4;
+  //   int recommendedRandomSize = (AmountOfElements - wordAmount - HintAmount) / ((columnByClasses.Length / 2) - 1);//super formula
+  //   int maxDeviation = recommendedRandomSize / 3;
+  //   int randomLeft = AmountOfElements - wordAmount - HintAmount;
+  //   int ElementIndex = 0;
+  //   foreach (ElementClass ElClass in columnByClasses)
+  //   {
+  //     switch (ElClass)
+  //     {
+  //       case ElementClass.Word:
+  //         {
+  //           ElementIndex += rnd.Next(recommendedRandomSize - maxDeviation, recommendedRandomSize + maxDeviation);
+  //           column[ElementIndex] = words[wordI];
+  //           wordI++;
+  //           break;
+  //         }
+  //       case ElementClass.Hint:
+  //         {
+  //           //TODO                                  custom chance
+  //           //             || 4 means 1 in 4 chance of being double hint 
+  //           //             \/
+  //           if (rnd.Next(0, 4) == 0)
+  //           {
+
+  //           }
+  //           else
+  //           {
+  //             int length = rnd.Next(2, recommendedHintSize);
+  //             char parenthesis = '}';//TODO random parenthesis type
+  //           }
+  //           break;
+  //         }
+  //     }
+  //     //Generate Randoms
+  //   }
+  //   throw new NotImplementedException();
+  // }
   private string[] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
   {
     int length = (height * width) - (wordAmount * wordLength) + wordAmount;
-    string[] row = new string[length];
+    string[] column = new string[length];
     int wordI = 0;
     HashSet<int> randomWordPos = new HashSet<int>();
     for (int i = 0; i < words.Length; i++)
@@ -332,7 +409,7 @@ public class Column
     {
       if (randomWordPos.Contains(i))
       {
-        row[i] = words[wordI];
+        column[i] = words[wordI];
         if (words[wordI] != RIGHT_WORD)
         {
           posToWord.Add(i, words[wordI]);
@@ -341,29 +418,42 @@ public class Column
       }
       else
       {
-        row[i] = Constants.symbols[rnd.Next(Constants.symbols.Length)].ToString();
+        column[i] = "U";// U for undefined// = Constants.symbols[rnd.Next(Constants.symbols.Length)].ToString();
       }
     }
-    return row;
+    return column;
   }
 
+  // private string[] GenerateHint(int length, char parenthesis = 'R')//R means random
+  // {
+  //   string[] hint = new string[length];
+  //   if (parenthesis == 'R')
+  //   {
+  //     switch (rnd.Next(0, 4))
+  //     {
+  //       case 0:
+  //         parenthesis = '}';
+  //         break;
+  //       case 1:
+  //         parenthesis = ']';
+  //         break;
+  //       case 2:
+  //         parenthesis = ')';
+  //         break;
+  //       case 3:
+  //         parenthesis = '>';
+  //         break;
+  //     }
+  //     for (int i = 0; i < length - 1; i++)
+  //     {
 
-  private string[] GenerateRandomWords(int amount = 6, int length = 6)
-  {
-    string[] res = new string[amount];
-    HashSet<int> usedIndex = new HashSet<int>();
-    for (int i = 0; i < amount; i++)
-    {
-      int index = rnd.Next(Constants.WordsPull[length - 4].Length);
-      if (usedIndex.Contains(index))
-      {
-        i--;
-        continue;
-      }
-      res[i] = Constants.WordsPull[length - 4][index];
-    }
-    return res;
-  }
+  //     }
+  //   }
+  //   throw new NotImplementedException();
+  // }
+
+
+
 
 
   private Dictionary<int, int> MapPosToElements(string[] elements)
@@ -394,7 +484,7 @@ public class Column
   /// <param name="elements">array of elements</param>
   /// <param name="rowWidth">width of each column row</param>
   /// <returns></returns>
-  private Dictionary<int, int> GenerateHintData(string[] elements, int rowWidth)
+  private Dictionary<int, int> GenerateHintData(string[] elements, int rowWidth, int hintAmount = 4)
   {
     Dictionary<int, int> res = new Dictionary<int, int>();
 
@@ -439,6 +529,23 @@ public class Column
           }
         }
       }
+    }
+    return res;
+  }
+
+  private string[] GenerateRandomWords(int amount = 6, int length = 6)
+  {
+    string[] res = new string[amount];
+    HashSet<int> usedIndex = new HashSet<int>();
+    for (int i = 0; i < amount; i++)
+    {
+      int index = rnd.Next(Constants.WordsPull[length - 4].Length);
+      if (usedIndex.Contains(index))
+      {
+        i--;
+        continue;
+      }
+      res[i] = Constants.WordsPull[length - 4][index];
     }
     return res;
   }
