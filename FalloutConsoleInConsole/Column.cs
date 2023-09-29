@@ -3,16 +3,16 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 //TODO ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-/*TODOs:
-  -Life Hint
-  -Better hint creation(WIP)
-  -"frontend" for logging
-    -current selected word display
-    -tabs.. etc
-  -New rendering to render two columns side to side
-    -save render data as an array of rows to render with special symbols for color changing
-    -implement render in other class or in Program.cs 
-*/
+// TODOs:
+// -Life Hint
+//?-Better hint creation(Probably finished)
+// -"frontend" for logging
+//   -current selected word display
+//   -tabs.. etc
+//*  -likeness(Next TODO)
+// -New rendering to render two columns side to side
+//   -save render data as an array of rows to render with special symbols for color changing
+//   -implement render in other class or in Program.cs 
 public class Column
 {
   static Random rnd = new Random();
@@ -84,6 +84,8 @@ public class Column
     columnByElements = GenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
     posToElement = MapPosToElements(columnByElements);
     hintPosData = GenerateHintData(COLUMN_WIDTH);
+    PlaceRandomSymbols();
+    //TODO: there is no sense in all those functions to return value, they can just modify global variables 
     // string[] testToDelete = NewGenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
   }
 
@@ -503,17 +505,6 @@ public class Column
       i--;
     }
 
-    for (int i = 0; i < hintAmount; i++)//!Reserve HintPoses, not optimal
-    {
-      int pos = rnd.Next(columnByElements.Length);
-      if (columnByElements[pos].Length <= 1)
-      {
-        randomHintPos.Add(pos);
-        continue;
-      }
-      i--;
-    }
-
 
     foreach (int pos in randomHintPos)
     {
@@ -525,11 +516,11 @@ public class Column
     {
       string el = columnByElements[i];
       widthSearched += el.Length;
-      if (el == "S")//is a start of a hint
+      if (el == "S" && 0 != (widthSearched % rowWidth))//is a start of a hint
       {
-        List<int> PossibleClosingPos = new List<int>();
-        int test = (widthSearched % rowWidth);//TODO: Fix row restrictions
-        for (int j = 1; rowWidth > (widthSearched % rowWidth) + 1 + j;)
+        List<int> PossibleClosingPos = new List<int>();//? probably fixedTODO: Fix row restrictions
+        int checkedWidth = 0;//width checked in chars
+        for (int j = 1; rowWidth > (widthSearched % rowWidth) + checkedWidth; j++)
         {
           if (columnByElements[i + j] != "S" && columnByElements[i + j].Length <= 1)
           {
@@ -539,25 +530,13 @@ public class Column
               break;
             }
           }
-          j += columnByElements[i + j].Length;
+          checkedWidth += columnByElements[i + j].Length;
         }
-
-
-        if (PossibleClosingPos.Count == 0)
+        if (PossibleClosingPos.Count == 0)//If no possible hints, create new hint start later in list
         {
-          // int NewPos = 0;
-          // for (int safetyCounter = 0; safetyCounter < columnByElements.Length - i; safetyCounter++)
-          // {
-          //   NewPos = rnd.Next(Math.Min(i + 1, columnByElements.Length - 1), columnByElements.Length);
-          //   if (columnByElements[NewPos].Length <= 1 && Constants.Parentheses.Count(x => x.ToString() == columnByElements[NewPos]) < 0)
-          //   {
-          //     randomHintPos.Add(NewPos);//!Was used if no possible hint could be created
-          //     continue;
-          //   }
-          // }
-          // if (NewPos == 0)
-          //   throw new Exception("Could not find a second chance point for hint");
-          // columnByElements[NewPos] = "S";
+          int NewPos = rnd.Next(i + 1, columnByElements.Length);
+          columnByElements[i] = "U";
+          columnByElements[NewPos] = "S";
         }
         else
         {
@@ -577,46 +556,18 @@ public class Column
         }
       }
     }
-    // for (int a = 0; a < columnByElements.Length; a++)
-    // {
-    //   string el = columnByElements[a];
-    //   char ch = el[0];
-    //   bool isOpen = Constants.GetOppositeParentheses.ContainsValue(ch);
-    //   bool isClosed = Constants.GetOppositeParentheses.ContainsKey(ch);
-    //   foreach (char c in el)
-    //   {
-    //     if (widthSearched % rowWidth == 0)
-    //     {
-    //       searchedChar = new Stack<char>();
-    //       searchedCharIndex = new Stack<int>();
-    //     }
-    //     widthSearched++;
-    //   }
-    //   if (el.Length == 1 && Constants.IsParentheses(ch))
-    //   {
-    //     if (isOpen)//add open parentheses
-    //     {
-    //       searchedChar.Push(ch);
-    //       searchedCharIndex.Push(a);
-    //     }
-    //     if (isClosed && searchedChar.Contains(Constants.GetOppositeParentheses[ch]))//if closed par.. is in search list
-    //     {
-    //       while (searchedChar.Count > 0)
-    //       {
-
-    //         char c = searchedChar.Pop();
-    //         int i = searchedCharIndex.Pop();
-    //         if (c == Constants.GetOppositeParentheses[ch])
-    //         {
-    //           res.Add(i, a - i);
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
     return res;
   }
-
+  private void PlaceRandomSymbols()
+  {
+    for (int i = 0; i < columnByElements.Length; i++)
+    {
+      if (columnByElements[i] == "U")
+      {
+        columnByElements[i] = Constants.symbols[rnd.Next(0, Constants.symbols.Length)].ToString();
+      }
+    }
+  }
   private string[] GenerateRandomWords(int amount = 6, int length = 6)
   {
     string[] res = new string[amount];
