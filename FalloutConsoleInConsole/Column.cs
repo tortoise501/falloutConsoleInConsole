@@ -6,10 +6,7 @@ using System.Runtime.CompilerServices;
 // TODOs:
 // -Life Hint
 //?-Better hint creation(Probably finished)
-// -"frontend" for logging
-//   -current selected word display
-//   -tabs.. etc
-//*  -likeness(Next TODO)
+// -Make Logging as a class, for better rendering
 // -New rendering to render two columns side to side
 //   -save render data as an array of rows to render with special symbols for color changing
 //   -implement render in other class or in Program.cs 
@@ -18,7 +15,7 @@ using System.Runtime.CompilerServices;
 //!Problems:
 //!A lot of possible infinite loops during column generation
 //!Reserve hint generation doesn't work ideally
-public class Column
+public class Column : IRenderable
 {
   static Random rnd = new Random();
 
@@ -611,5 +608,66 @@ public class Column
       }
     }
     return res;
+  }
+
+  List<List<RenderData>> IRenderable.GetRenderData()
+  {
+    List<List<RenderData>> res = new List<List<RenderData>>();
+    int x = 0;
+    int y = 0;
+    int jump;
+    res.Add(new List<RenderData>());
+    for (int i = 0; i < columnByElements.Length; i += jump)
+    {
+      jump = 1;//TODO:use private function GetCharsOf();
+      List<char> charsToRender = new List<char>();
+      if (hintPosData.ContainsKey(i) && posToElement[selectorPos] == i)
+      {
+        jump = 0;
+        for (int j = 0; j <= hintPosData[i]; j++)
+        {
+          List<char> charr = columnByElements[i + j].ToCharArray().ToList();
+          charsToRender = charsToRender.Concat(charr).ToList();
+          jump++;
+        }
+      }
+      else
+      {
+        charsToRender = columnByElements[i].ToCharArray().ToList();
+      }
+      foreach (char c in charsToRender)
+      {
+        if (x + y * COLUMN_WIDTH == selectorPos)
+        {
+          res.Last().Add(new RenderData(c, ConsoleColor.DarkGreen, ConsoleColor.Black));
+        }
+        else if (i == posToElement[selectorPos])
+        {
+          res.Last().Add(new RenderData(c, ConsoleColor.Green, ConsoleColor.Black));
+        }
+        else
+        {
+          res.Last().Add(new RenderData(c, ConsoleColor.Black, ConsoleColor.Green));
+        }
+        x++;
+        if (x % COLUMN_WIDTH == 0)
+        {
+          y++;
+          x = 0;
+          res.Add(new List<RenderData>());
+        }
+      }
+    }
+    return res;
+  }
+
+  public int GetPositionX()
+  {
+    throw new NotImplementedException();
+  }
+
+  public int GetPositionY()
+  {
+    throw new NotImplementedException();
   }
 }
