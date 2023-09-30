@@ -24,17 +24,17 @@ public class Column : IRenderable
   /// Elements are: symbols, words
   /// </summary>
   string[] columnByElements = new string[0];
-  readonly int COLUMN_WIDTH;
-  readonly int COLUMN_HEIGHT;
+  readonly int columnWidth;
+  readonly int columnHeight;
 
 
 
   string[] words = new string[0];
   readonly string rightWord;
-  readonly int WORD_LENGTH;
-  readonly int WORD_AMOUNT;
+  readonly int wordLength;
+  readonly int wordAmount;
 
-
+  //!deprecated
   public GameState gameState { get; private set; } = GameState.InProgress;
 
   //*----------------------------------------------------------------------Attempts
@@ -66,8 +66,9 @@ public class Column : IRenderable
   /// </summary>
   Dictionary<int, string> posToWord = new Dictionary<int, string>();
 
-
+  //!probably deprecated
   int selectorPos = 0;  //selected position(as character index)
+  bool isColumnSelected = false;
 
   //*----------------------------------------------------------------------LOG
   int logLength = 7;
@@ -77,15 +78,15 @@ public class Column : IRenderable
 
   public Column(int width, int height, int wordLength, int wordAmount)
   {
-    COLUMN_WIDTH = width;
-    COLUMN_HEIGHT = height;
-    WORD_LENGTH = wordLength;
-    WORD_AMOUNT = wordAmount;
-    words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH);
+    columnWidth = width;
+    columnHeight = height;
+    this.wordLength = wordLength;
+    this.wordAmount = wordAmount;
+    words = GenerateRandomWords(this.wordAmount, this.wordLength);
     rightWord = words[rnd.Next(0, wordAmount)];
-    columnByElements = GenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
+    columnByElements = GenerateColumn(words, columnWidth, columnHeight, this.wordLength, this.wordAmount);
     posToElement = MapPosToElements(columnByElements);
-    hintPosData = GenerateHintData(COLUMN_WIDTH);
+    hintPosData = GenerateHintData(columnWidth);
     PlaceRandomSymbols();
     //TODO: there is no sense in all those functions to return value, they can just modify global variables 
     // string[] testToDelete = NewGenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
@@ -101,12 +102,12 @@ public class Column : IRenderable
       LooseTheGame();
     }
   }
-
+  //?Deprecated?
   private void LooseTheGame()
   {
     gameState = GameState.Lost;
   }
-
+  //!Deprecated
   public void RenderGameLogs()
   {
     foreach (string LogOutputLine in gameLogs)
@@ -115,6 +116,7 @@ public class Column : IRenderable
     }
     Console.WriteLine();
   }
+  //!Deprecated
   public void AddToGameLogs(string LogOutputLine)
   {
     gameLogs.Enqueue(LogOutputLine);
@@ -123,7 +125,7 @@ public class Column : IRenderable
       gameLogs.Dequeue();
     }
   }
-
+  //!Deprecated
   public void RenderHitPoints()
   {
     Console.Write("[ ");
@@ -137,7 +139,8 @@ public class Column : IRenderable
     }
     Console.Write("]\n");
   }
-
+  //!Deprecated
+  //!Delete it
   public void Render(bool clear = true)
   {
     if (clear)
@@ -167,7 +170,7 @@ public class Column : IRenderable
       }
       foreach (char c in charsToRender)
       {
-        if (x + y * COLUMN_WIDTH == selectorPos)
+        if (x + y * columnWidth == selectorPos)
         {
           Console.ForegroundColor = ConsoleColor.Black;
           Console.BackgroundColor = ConsoleColor.DarkGreen;
@@ -184,7 +187,7 @@ public class Column : IRenderable
         }
         Console.Write(c);
         x++;
-        if (x % COLUMN_WIDTH == 0)
+        if (x % columnWidth == 0)
         {
           y++;
           x = 0;
@@ -209,7 +212,7 @@ public class Column : IRenderable
     }
     return charsToRender;
   }
-
+  //!in process of deprecation
   public void HandleInput()
   {
     ConsoleKey key = Console.ReadKey().Key;
@@ -224,10 +227,10 @@ public class Column : IRenderable
         selectorPos -= 1;
         break;
       case ConsoleKey.UpArrow:
-        selectorPos -= COLUMN_WIDTH;
+        selectorPos -= columnWidth;
         break;
       case ConsoleKey.DownArrow:
-        selectorPos += COLUMN_WIDTH;
+        selectorPos += columnWidth;
         break;
       case ConsoleKey.Enter:
         int selectedIndex = posToElement[selectorPos];
@@ -237,7 +240,7 @@ public class Column : IRenderable
     }
     selectorPos = Math.Clamp(selectorPos, 0, posToElement.Count - 1);
   }
-
+  //!Do it with gameLogger object
   private ExecutionCode CheckInput(int selectedIndex, string selectedItem)
   {
     if (selectedItem == rightWord)//is this right word
@@ -317,7 +320,6 @@ public class Column : IRenderable
 
 
 
-  //TODO: create system to limit amount of hints for ex. create special symbols 'S' that will be replaced to right parentheses to create hint 
   // private string[] NewGenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6, int HintAmount = 7)
   // {
   //   int AmountOfElements = (height * width) - (wordAmount * wordLength) + wordAmount;
@@ -622,11 +624,11 @@ public class Column : IRenderable
       }
       foreach (char c in charsToRender)
       {
-        if (x + y * COLUMN_WIDTH == selectorPos)
+        if (x + y * columnWidth == selectorPos && isColumnSelected)
         {
           res.Last().Add(new RenderData(c, ConsoleColor.DarkGreen, ConsoleColor.Black));
         }
-        else if (i == posToElement[selectorPos])
+        else if (i == posToElement[selectorPos] && isColumnSelected)
         {
           res.Last().Add(new RenderData(c, ConsoleColor.Green, ConsoleColor.Black));
         }
@@ -635,7 +637,7 @@ public class Column : IRenderable
           res.Last().Add(new RenderData(c, ConsoleColor.Black, ConsoleColor.Green));
         }
         x++;
-        if (x % COLUMN_WIDTH == 0)
+        if (x % columnWidth == 0)
         {
           y++;
           x = 0;
@@ -643,7 +645,14 @@ public class Column : IRenderable
         }
       }
     }
+    isColumnSelected = false;//expire "selection"
     return res;
+  }
+
+  public void SelectElement(int posOfCursor)
+  {
+    isColumnSelected = true;
+    selectorPos = posOfCursor;
   }
 
   public int GetPositionX()

@@ -24,7 +24,6 @@ class ConsoleGameRenderer
         }
       }
     }
-    int i = 2;
   }
   public void Render()
   {
@@ -35,6 +34,8 @@ class ConsoleGameRenderer
       {
         if (renderData[y, x] == null)
         {
+          Console.BackgroundColor = ConsoleColor.Black;
+          Console.ForegroundColor = ConsoleColor.Black;
           Console.Write(" ");
           continue;
         }
