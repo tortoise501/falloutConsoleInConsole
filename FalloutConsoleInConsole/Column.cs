@@ -91,22 +91,7 @@ public class Column : IRenderable
     // string[] testToDelete = NewGenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
   }
 
-  public bool init()
-  {
-    Console.CursorVisible = false;
-    Console.ForegroundColor = ConsoleColor.Green;
-    Console.BackgroundColor = ConsoleColor.Black;
 
-    return true;//!delete after debugging
-
-    Console.WriteLine("press Enter to play or any other key to exit");
-    ConsoleKey key = Console.ReadKey().Key;
-    if (key != ConsoleKey.Enter)
-    {
-      return false;
-    }
-    return true;
-  }
 
   public void LoseHitPoint()
   {

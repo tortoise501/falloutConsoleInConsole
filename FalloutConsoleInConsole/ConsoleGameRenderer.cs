@@ -1,31 +1,30 @@
 class ConsoleGameRenderer
 {
-  const int ConsoleWidth = 60;
-  const int ConsoleHeight = 30;
+  const int ConsoleWidth = 30;
+  const int ConsoleHeight = 20;
   private RenderData[,] renderData = new RenderData[ConsoleHeight, ConsoleWidth];
   private List<IRenderable> objectsToRender = new List<IRenderable>();
-  public void UpdateRenderData()
+  public void UpdateColumnRenderData(int upPadding, int paddingBetweenColumns, int ColumnWidth)
   {
-    foreach (IRenderable objectToRender in objectsToRender)
+    for (int i = 0; i < objectsToRender.Count(); i++)
     {
-      InsertRenderData(objectToRender);
+      InsertRenderData(objectsToRender[i], i * (ColumnWidth + paddingBetweenColumns), upPadding);//!19 is temporal for length of column
     }
   }
-  public void InsertRenderData(IRenderable objectRenderI)
+  public void InsertRenderData(IRenderable objectRenderI, int xOffset = 0, int yOffset = 0)
   {
-    int xOffest = 1;//!FOR TESTING
-    int yOffset = 1;//!FOR TESTING
     List<List<RenderData>> objectRenderData = objectRenderI.GetRenderData();
     for (int y = 0; y < objectRenderData.Count(); y++)
     {
       for (int x = 0; x < objectRenderData[y].Count(); x++)
       {
-        if (y < renderData.GetLength(0) && x < renderData.GetLength(1))
+        if (y + yOffset < renderData.GetLength(0) && x + xOffset < renderData.GetLength(1))
         {
-          renderData[y, x] = objectRenderData[y][x];
+          renderData[y + yOffset, x + xOffset] = objectRenderData[y][x];
         }
       }
     }
+    int i = 2;
   }
   public void Render()
   {
@@ -36,7 +35,8 @@ class ConsoleGameRenderer
       {
         if (renderData[y, x] == null)
         {
-          break;
+          Console.Write(" ");
+          continue;
         }
         RenderData character = renderData[y, x];
         Console.BackgroundColor = character.backgroundColor;

@@ -9,17 +9,16 @@ class Program
     ConsoleGameRenderer renderer = new ConsoleGameRenderer();
     Console.Clear();
     Column column = new Column(9, 16, 4, 8);
+    Column column2 = new Column(9, 16, 4, 8);
     renderer.AddObjectToRender(column);
-    if (!column.init())
-    {
-      return;
-    }
+    renderer.AddObjectToRender(column2);
+    Console.CursorVisible = false;
     // Console.Clear();
     // column.RenderHitPoints();
     // column.Render(false);
     while (true)
     {
-      renderer.UpdateRenderData();
+      renderer.UpdateColumnRenderData(2, 2, 9);
       renderer.Render();
       column.HandleInput();
       // Console.Clear();
