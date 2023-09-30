@@ -13,6 +13,11 @@ using System.Runtime.CompilerServices;
 // -New rendering to render two columns side to side
 //   -save render data as an array of rows to render with special symbols for color changing
 //   -implement render in other class or in Program.cs 
+//
+//
+//!Problems:
+//!A lot of possible infinite loops during column generation
+//!Reserve hint generation doesn't work ideally
 public class Column
 {
   static Random rnd = new Random();
@@ -28,7 +33,7 @@ public class Column
 
 
   string[] words = new string[0];
-  readonly string RIGHT_WORD;
+  readonly string rightWord;
   readonly int WORD_LENGTH;
   readonly int WORD_AMOUNT;
 
@@ -80,7 +85,7 @@ public class Column
     WORD_LENGTH = wordLength;
     WORD_AMOUNT = wordAmount;
     words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH);
-    RIGHT_WORD = words[rnd.Next(0, wordAmount)];
+    rightWord = words[rnd.Next(0, wordAmount)];
     columnByElements = GenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
     posToElement = MapPosToElements(columnByElements);
     hintPosData = GenerateHintData(COLUMN_WIDTH);
@@ -95,7 +100,7 @@ public class Column
     Console.ForegroundColor = ConsoleColor.Green;
     Console.BackgroundColor = ConsoleColor.Black;
 
-
+    return true;//!delete after debugging
 
     Console.WriteLine("press Enter to play or any other key to exit");
     ConsoleKey key = Console.ReadKey().Key;
@@ -253,7 +258,7 @@ public class Column
 
   private ExecutionCode CheckInput(int selectedIndex, string selectedItem)
   {
-    if (selectedItem == RIGHT_WORD)//is this right word
+    if (selectedItem == rightWord)//is this right word
     {
       return ExecutionCode.CorrectWord;
     }
@@ -280,7 +285,7 @@ public class Column
     }
     if (executionCode == ExecutionCode.Mistake)
     {
-      AddToGameLogs($">{columnByElements[selectedIndex]}\n>Entry Denied\n>Likeness=TODO\n");
+      AddToGameLogs($">{columnByElements[selectedIndex]}\n>Entry Denied\n>Likeness={CheckForLikeness(columnByElements[selectedIndex], rightWord)}\n");
       LoseHitPoint();
     }
     if (executionCode == ExecutionCode.CorrectWord)
@@ -403,7 +408,13 @@ public class Column
     HashSet<int> randomWordPos = new HashSet<int>();
     for (int i = 0; i < words.Length; i++)
     {
-      randomWordPos.Add(rnd.Next(length / wordAmount + length / wordAmount * i));
+      int pos = rnd.Next(length / wordAmount + length / wordAmount * i);
+      if (randomWordPos.Contains(pos))
+      {
+        i--;
+        continue;
+      }
+      randomWordPos.Add(pos);
     }
 
 
@@ -412,7 +423,7 @@ public class Column
       if (randomWordPos.Contains(i))
       {
         column[i] = words[wordI];
-        if (words[wordI] != RIGHT_WORD)
+        if (words[wordI] != rightWord)
         {
           posToWord.Add(i, words[wordI]);
         }
@@ -562,7 +573,7 @@ public class Column
   {
     for (int i = 0; i < columnByElements.Length; i++)
     {
-      if (columnByElements[i] == "U")
+      if (columnByElements[i] == "U" || columnByElements[i] == "S")
       {
         columnByElements[i] = Constants.symbols[rnd.Next(0, Constants.symbols.Length)].ToString();
       }
@@ -581,6 +592,23 @@ public class Column
         continue;
       }
       res[i] = Constants.WordsPull[length - 4][index];
+    }
+    return res;
+  }
+
+  private int CheckForLikeness(string input, string compareTo)
+  {
+    if (input.Length != compareTo.Length)
+    {
+      throw new Exception("Stupid chat gpt exception");
+    }
+    int res = 0;
+    for (int i = 0; i < input.Length; i++)
+    {
+      if (input[i] == compareTo[i])
+      {
+        res++;
+      }
     }
     return res;
   }
