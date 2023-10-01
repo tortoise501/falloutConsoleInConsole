@@ -7,14 +7,11 @@ using System.Runtime.CompilerServices;
 // -Life Hint
 //?-Better hint creation(Probably finished)
 // -Make Logging as a class, for better rendering
-// -New rendering to render two columns side to side
-//   -save render data as an array of rows to render with special symbols for color changing
-//   -implement render in other class or in Program.cs 
 //
 //
 //!Problems:
 //!A lot of possible infinite loops during column generation
-//!Reserve hint generation doesn't work ideally
+//!Reserve hint generation doesn't work sometimes
 public class Column : IRenderable
 {
   static Random rnd = new Random();
@@ -29,13 +26,11 @@ public class Column : IRenderable
 
 
 
-  string[] words = new string[0];
+  public string[] words { get; private set; } = new string[0];//!is public temporarily for dud validation in Game class 
   readonly string rightWord;
   readonly int wordLength;
   readonly int wordAmount;
 
-  //!deprecated
-  public GameState gameState { get; private set; } = GameState.InProgress;
 
   //*----------------------------------------------------------------------Attempts
   //TODO: integrate this parameters to constructor
@@ -76,14 +71,14 @@ public class Column : IRenderable
 
 
 
-  public Column(int width, int height, int wordLength, int wordAmount)
+  public Column(int width, int height, int wordLength, int wordAmount, string[] words)
   {
     columnWidth = width;
     columnHeight = height;
     this.wordLength = wordLength;
     this.wordAmount = wordAmount;
-    words = GenerateRandomWords(this.wordAmount, this.wordLength);
-    rightWord = words[rnd.Next(0, wordAmount)];
+    this.words = words; //GenerateRandomWords(this.wordAmount, this.wordLength);
+    rightWord = words[rnd.Next(0, wordAmount - 1)];//!test
     columnByElements = GenerateColumn(words, columnWidth, columnHeight, this.wordLength, this.wordAmount);
     posToElement = MapPosToElements(columnByElements);
     hintPosData = GenerateHintData(columnWidth);
@@ -94,108 +89,7 @@ public class Column : IRenderable
 
 
 
-  public void LoseHitPoint()
-  {
-    attemptsLeft--;
-    if (attemptsLeft == 0)
-    {
-      LooseTheGame();
-    }
-  }
-  //?Deprecated?
-  private void LooseTheGame()
-  {
-    gameState = GameState.Lost;
-  }
-  //!Deprecated
-  public void RenderGameLogs()
-  {
-    foreach (string LogOutputLine in gameLogs)
-    {
-      Console.Write(LogOutputLine);
-    }
-    Console.WriteLine();
-  }
-  //!Deprecated
-  public void AddToGameLogs(string LogOutputLine)
-  {
-    gameLogs.Enqueue(LogOutputLine);
-    if (gameLogs.Count() > logLength)
-    {
-      gameLogs.Dequeue();
-    }
-  }
-  //!Deprecated
-  public void RenderHitPoints()
-  {
-    Console.Write("[ ");
-    for (int i = 0; i < attemptsLeft; i++)
-    {
-      Console.Write("\u2580 ");
-    }
-    for (int i = 0; i < maxAttempts - attemptsLeft; i++)
-    {
-      Console.Write("  ");
-    }
-    Console.Write("]\n");
-  }
-  //!Deprecated
-  //!Delete it
-  public void Render(bool clear = true)
-  {
-    if (clear)
-    {
-      Console.Clear();
-    }
-    int x = 0;
-    int y = 0;
-    int jump;
-    for (int i = 0; i < columnByElements.Length; i += jump)
-    {
-      jump = 1;//TODO:use private function GetCharsOf();
-      List<char> charsToRender = new List<char>();
-      if (hintPosData.ContainsKey(i) && posToElement[selectorPos] == i)
-      {
-        jump = 0;
-        for (int j = 0; j <= hintPosData[i]; j++)
-        {
-          List<char> charr = columnByElements[i + j].ToCharArray().ToList();
-          charsToRender = charsToRender.Concat(charr).ToList();
-          jump++;
-        }
-      }
-      else
-      {
-        charsToRender = columnByElements[i].ToCharArray().ToList();
-      }
-      foreach (char c in charsToRender)
-      {
-        if (x + y * columnWidth == selectorPos)
-        {
-          Console.ForegroundColor = ConsoleColor.Black;
-          Console.BackgroundColor = ConsoleColor.DarkGreen;
-        }
-        else if (i == posToElement[selectorPos])
-        {
-          Console.ForegroundColor = ConsoleColor.Black;
-          Console.BackgroundColor = ConsoleColor.Green;
-        }
-        else
-        {
-          Console.ForegroundColor = ConsoleColor.Green;
-          Console.BackgroundColor = ConsoleColor.Black;
-        }
-        Console.Write(c);
-        x++;
-        if (x % columnWidth == 0)
-        {
-          y++;
-          x = 0;
-          Console.WriteLine("");
-        }
-      }
-    }
-  }
+
 
   /// <summary>
   /// Use for hints
@@ -212,37 +106,12 @@ public class Column : IRenderable
     }
     return charsToRender;
   }
-  //!in process of deprecation
-  public void HandleInput()
-  {
-    ConsoleKey key = Console.ReadKey().Key;
 
 
-    switch (key)
-    {
-      case ConsoleKey.RightArrow:
-        selectorPos += 1;
-        break;
-      case ConsoleKey.LeftArrow:
-        selectorPos -= 1;
-        break;
-      case ConsoleKey.UpArrow:
-        selectorPos -= columnWidth;
-        break;
-      case ConsoleKey.DownArrow:
-        selectorPos += columnWidth;
-        break;
-      case ConsoleKey.Enter:
-        int selectedIndex = posToElement[selectorPos];
-        string selectedItem = columnByElements[selectedIndex];
-        ExecuteInput(CheckInput(selectedIndex, selectedItem), selectedIndex, selectedItem);
-        break;
-    }
-    selectorPos = Math.Clamp(selectorPos, 0, posToElement.Count - 1);
-  }
-  //!Do it with gameLogger object
-  private ExecutionCode CheckInput(int selectedIndex, string selectedItem)
+  public ExecutionCode CheckInput()
   {
+    int selectedIndex = posToElement[selectorPos];
+    string selectedItem = columnByElements[selectedIndex];
     if (selectedItem == rightWord)//is this right word
     {
       return ExecutionCode.CorrectWord;
@@ -262,40 +131,32 @@ public class Column : IRenderable
     }
   }
 
-  private void ExecuteInput(ExecutionCode executionCode, int selectedIndex, string selectedItem)
+  public string GenerateLog(ExecutionCode executionCode, int selectedIndex)
   {
-    if (executionCode == ExecutionCode.WrongInput)
-    {
-      return;
-    }
     if (executionCode == ExecutionCode.Mistake)
     {
-      AddToGameLogs($">{columnByElements[selectedIndex]}\n>Entry Denied\n>Likeness={CheckForLikeness(columnByElements[selectedIndex], rightWord)}\n");
-      LoseHitPoint();
+      return $">{columnByElements[selectedIndex]}\n>Entry Denied\n>Likeness={CheckForLikeness(columnByElements[selectedIndex], rightWord)}\n";
     }
     if (executionCode == ExecutionCode.CorrectWord)
     {
-      AddToGameLogs($">{columnByElements[selectedIndex]}\n>Exact match\n>Please Wait\n>while system\n>is accepted");
-      gameState = GameState.Won;
+      return $">{columnByElements[selectedIndex]}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
       char[] hint = GetCharsOf(selectedIndex, hintPosData[selectedIndex]).ToArray();
-      AddToGameLogs($">{string.Join("", hint)}\n>Dud removed\n");
-      RemoveDud();
+      return $">{string.Join("", hint)}\n>Dud removed\n";
     }
     if (executionCode == ExecutionCode.HintLife)
     {
-      AddToGameLogs($"ATTEMPTS RESTORED\n");
-      attemptsLeft = maxAttempts;
+      return $"ATTEMPTS RESTORED\n";
     }
     if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
     {
       hintPosData.Remove(selectedIndex);
     }
-
+    return "";
   }
-  private void RemoveDud()
+  public void RemoveDud()//!public temporarily for Game class dud removal
   {
     if (posToWord.Count == 0)
     {
@@ -313,77 +174,6 @@ public class Column : IRenderable
     posToWord.Remove(poses[randomWordIndex]);
   }
 
-
-
-
-
-
-
-
-  // private string[] NewGenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6, int HintAmount = 7)
-  // {
-  //   int AmountOfElements = (height * width) - (wordAmount * wordLength) + wordAmount;
-  //   string[] column = new string[AmountOfElements];
-  //   int wordI = 0;
-  //   ElementClass[] columnByClasses = new ElementClass[(wordAmount + HintAmount) * 2 + 1];//words + elements + spaces after them + 1 before them
-  //   columnByClasses = columnByClasses.Select(x => ElementClass.Random).ToArray();//Convert everything to random
-  //   //Generate columnByClasses list
-  //   int generatedWords = 0;
-  //   int generatedHints = 0;
-  //   for (int i = 1; i < columnByClasses.Length - 1; i += 2)
-  //   {
-  //     int rand = rnd.Next(0, wordAmount + HintAmount);
-  //     if (rand < wordAmount && generatedWords != wordAmount)
-  //     {
-  //       columnByClasses[i] = ElementClass.Word;
-  //     }
-  //     else if (generatedHints != HintAmount)
-  //     {
-  //       columnByClasses[i] = ElementClass.Hint;
-  //     }
-  //     else if (generatedWords != wordAmount)
-  //     {
-  //       columnByClasses[i] = ElementClass.Word;
-  //     }
-  //   }
-  //   //Process columnByClasses list
-  //   int recommendedHintSize = 4;
-  //   int recommendedRandomSize = (AmountOfElements - wordAmount - HintAmount) / ((columnByClasses.Length / 2) - 1);//super formula
-  //   int maxDeviation = recommendedRandomSize / 3;
-  //   int randomLeft = AmountOfElements - wordAmount - HintAmount;
-  //   int ElementIndex = 0;
-  //   foreach (ElementClass ElClass in columnByClasses)
-  //   {
-  //     switch (ElClass)
-  //     {
-  //       case ElementClass.Word:
-  //         {
-  //           ElementIndex += rnd.Next(recommendedRandomSize - maxDeviation, recommendedRandomSize + maxDeviation);
-  //           column[ElementIndex] = words[wordI];
-  //           wordI++;
-  //           break;
-  //         }
-  //       case ElementClass.Hint:
-  //         {
-  //           //TODO                                  custom chance
-  //           //             || 4 means 1 in 4 chance of being double hint 
-  //           //             \/
-  //           if (rnd.Next(0, 4) == 0)
-  //           {
-
-  //           }
-  //           else
-  //           {
-  //             int length = rnd.Next(2, recommendedHintSize);
-  //             char parenthesis = '}';//TODO random parenthesis type
-  //           }
-  //           break;
-  //         }
-  //     }
-  //     //Generate Randoms
-  //   }
-  //   throw new NotImplementedException();
-  // }
   private string[] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
   {
     int length = (height * width) - (wordAmount * wordLength) + wordAmount;
@@ -420,36 +210,6 @@ public class Column : IRenderable
     }
     return column;
   }
-
-  // private string[] GenerateHint(int length, char parenthesis = 'R')//R means random
-  // {
-  //   string[] hint = new string[length];
-  //   if (parenthesis == 'R')
-  //   {
-  //     switch (rnd.Next(0, 4))
-  //     {
-  //       case 0:
-  //         parenthesis = '}';
-  //         break;
-  //       case 1:
-  //         parenthesis = ']';
-  //         break;
-  //       case 2:
-  //         parenthesis = ')';
-  //         break;
-  //       case 3:
-  //         parenthesis = '>';
-  //         break;
-  //     }
-  //     for (int i = 0; i < length - 1; i++)
-  //     {
-
-  //     }
-  //   }
-  //   throw new NotImplementedException();
-  // }
-
-
 
 
 
@@ -563,22 +323,22 @@ public class Column : IRenderable
       }
     }
   }
-  private string[] GenerateRandomWords(int amount = 6, int length = 6)
-  {
-    string[] res = new string[amount];
-    HashSet<int> usedIndex = new HashSet<int>();
-    for (int i = 0; i < amount; i++)
-    {
-      int index = rnd.Next(Constants.WordsPull[length - 4].Length);
-      if (usedIndex.Contains(index))
-      {
-        i--;
-        continue;
-      }
-      res[i] = Constants.WordsPull[length - 4][index];
-    }
-    return res;
-  }
+  // private string[] GenerateRandomWords(int amount = 6, int length = 6)
+  // {
+  //   string[] res = new string[amount];
+  //   HashSet<int> usedIndex = new HashSet<int>();
+  //   for (int i = 0; i < amount; i++)
+  //   {
+  //     int index = rnd.Next(Constants.WordsPull[length - 4].Length);
+  //     if (usedIndex.Contains(index))
+  //     {
+  //       i--;
+  //       continue;
+  //     }
+  //     res[i] = Constants.WordsPull[length - 4][index];
+  //   }
+  //   return res;
+  // }
 
   private int CheckForLikeness(string input, string compareTo)
   {
