@@ -42,6 +42,7 @@ class Game
     isStarted = true;
     Console.Clear();
     words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH).ToList();
+    Column.SetRightWord(words[rnd.Next(0, words.Count())]);
     for (int i = 0; i < wordsByColumns.Length; i++)
     {
       wordsByColumns[i] = words.Skip(i * 8).Take(8).ToList();
@@ -141,18 +142,17 @@ class Game
   }
   private string[] GenerateRandomWords(int amount = 6, int length = 6)
   {
-    string[] res = new string[amount];
-    HashSet<int> usedIndex = new HashSet<int>();
-    for (int i = 0; i < amount; i++)
+    HashSet<string> res = new HashSet<string>();
+    int SafetyCounter = 0;
+    while (res.Count() != amount)
     {
-      int index = rnd.Next(Constants.WordsPull[length - 4].Length);
-      if (usedIndex.Contains(index))
+      res.Add(Constants.WordsPull[length - 4][rnd.Next(0, Constants.WordsPull[length - 4].Length - 1)]);
+      if (SafetyCounter > 100)
       {
-        i--;
-        continue;
+        break;
       }
-      res[i] = Constants.WordsPull[length - 4][index];
+      SafetyCounter++;
     }
-    return res;
+    return res.ToArray();
   }
 }

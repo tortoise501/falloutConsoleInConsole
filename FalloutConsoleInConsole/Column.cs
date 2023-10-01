@@ -27,7 +27,14 @@ public class Column : IRenderable
 
 
   public string[] words { get; private set; } = new string[0];//!is public temporarily for dud validation in Game class 
-  readonly string rightWord;
+  private static string? rightWord;
+  static public void SetRightWord(string rightWord)
+  {
+    if (rightWord != null)
+    {
+      Column.rightWord = rightWord;
+    }
+  }
   readonly int wordLength;
   readonly int wordAmount;
 
@@ -78,7 +85,7 @@ public class Column : IRenderable
     this.wordLength = wordLength;
     this.wordAmount = wordAmount;
     this.words = words; //GenerateRandomWords(this.wordAmount, this.wordLength);
-    rightWord = words[rnd.Next(0, wordAmount - 1)];//!test
+    // rightWord = words[rnd.Next(0, wordAmount - 1)];//!test
     columnByElements = GenerateColumn(words, columnWidth, columnHeight, this.wordLength, this.wordAmount);
     posToElement = MapPosToElements(columnByElements);
     hintPosData = GenerateHintData(columnWidth);
