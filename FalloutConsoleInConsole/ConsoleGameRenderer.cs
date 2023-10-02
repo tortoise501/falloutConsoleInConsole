@@ -1,14 +1,14 @@
 class ConsoleGameRenderer
 {
-  const int ConsoleWidth = 30;
+  const int ConsoleWidth = 60;
   const int ConsoleHeight = 20;
   private RenderData[,] renderData = new RenderData[ConsoleHeight, ConsoleWidth];
   private List<IRenderable> objectsToRender = new List<IRenderable>();
-  public void UpdateColumnRenderData(int upPadding, int paddingBetweenColumns, int ColumnWidth)
+  public void UpdateColumnRenderData()
   {
     for (int i = 0; i < objectsToRender.Count(); i++)
     {
-      InsertRenderData(objectsToRender[i], i * (ColumnWidth + paddingBetweenColumns), upPadding);//!19 is temporal for length of column
+      InsertRenderData(objectsToRender[i], objectsToRender[i].GetPositionX(), objectsToRender[i].GetPositionY());//!19 is temporal for length of column
     }
   }
   public void InsertRenderData(IRenderable objectRenderI, int xOffset = 0, int yOffset = 0)

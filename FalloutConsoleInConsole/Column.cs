@@ -78,8 +78,11 @@ public class Column : IRenderable
 
 
 
-  public Column(int width, int height, int wordLength, int wordAmount, string[] words)
+  public Column(int width, int height, int wordLength, int wordAmount, string[] words, int y = 0, int x = 0)
   {
+    this.x = x;
+    this.y = y;
+
     columnWidth = width;
     columnHeight = height;
     this.wordLength = wordLength;
@@ -138,28 +141,37 @@ public class Column : IRenderable
     }
   }
 
-  public string GenerateLog(ExecutionCode executionCode, int selectedIndex)
+  // public string GetSelectedElement(int pos)
+  // {
+  //   return columnByElements[posToElement[pos]];
+  // }
+
+
+  public string GenerateLog(ExecutionCode executionCode, int selectedPos)
   {
+    string el = columnByElements[posToElement[selectedPos]];
     if (executionCode == ExecutionCode.Mistake)
     {
-      return $">{columnByElements[selectedIndex]}\n>Entry Denied\n>Likeness={CheckForLikeness(columnByElements[selectedIndex], rightWord)}\n";
+      if (rightWord == null)
+        throw new NullReferenceException();
+      return $">{el}\n>Entry Denied\n>Likeness={CheckForLikeness(el, rightWord)}";
     }
     if (executionCode == ExecutionCode.CorrectWord)
     {
-      return $">{columnByElements[selectedIndex]}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
+      return $">{el}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
-      char[] hint = GetCharsOf(selectedIndex, hintPosData[selectedIndex]).ToArray();
-      return $">{string.Join("", hint)}\n>Dud removed\n";
+      char[] hint = GetCharsOf(posToElement[selectedPos], hintPosData[posToElement[selectedPos]]).ToArray();
+      return $">{string.Join("", hint)}\n>Dud removed";
     }
     if (executionCode == ExecutionCode.HintLife)
     {
-      return $"ATTEMPTS RESTORED\n";
+      return $"ATTEMPTS RESTORED";
     }
     if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
     {
-      hintPosData.Remove(selectedIndex);
+      hintPosData.Remove(selectedPos);
     }
     return "";
   }
@@ -330,22 +342,6 @@ public class Column : IRenderable
       }
     }
   }
-  // private string[] GenerateRandomWords(int amount = 6, int length = 6)
-  // {
-  //   string[] res = new string[amount];
-  //   HashSet<int> usedIndex = new HashSet<int>();
-  //   for (int i = 0; i < amount; i++)
-  //   {
-  //     int index = rnd.Next(Constants.WordsPull[length - 4].Length);
-  //     if (usedIndex.Contains(index))
-  //     {
-  //       i--;
-  //       continue;
-  //     }
-  //     res[i] = Constants.WordsPull[length - 4][index];
-  //   }
-  //   return res;
-  // }
 
   private int CheckForLikeness(string input, string compareTo)
   {
@@ -424,11 +420,15 @@ public class Column : IRenderable
 
   public int GetPositionX()
   {
-    throw new NotImplementedException();
+    return x;
+    // throw new NotImplementedException();
   }
 
   public int GetPositionY()
   {
-    throw new NotImplementedException();
+    return y;
+    // throw new NotImplementedException();
   }
+  int x = 0;
+  int y = 0;
 }

@@ -19,8 +19,11 @@ class Game
   int yCursorPosition = 0;
   int selectedColumn = 0;
 
-  int maxAttempts = 4;//!test
+  const int maxAttempts = 4;//!test
   int attemptsLeft = 4;//!test
+  Attempts attempts = new Attempts(maxAttempts);
+
+  GameLogger gameLogger = new GameLogger(COLUMN_HEIGHT);
 
   ConsoleGameRenderer renderer = new ConsoleGameRenderer();
   Column[] columns = new Column[columnAmount];
@@ -41,22 +44,29 @@ class Game
   {
     isStarted = true;
     Console.Clear();
+    Console.CursorVisible = false;
+
+    attempts = new Attempts(maxAttempts, 0, 0);
+    renderer.AddObjectToRender(attempts);
+
+    gameLogger = new GameLogger(COLUMN_HEIGHT, COLUMN_WIDTH * columnAmount + 2 * columnAmount, 1);
+    renderer.AddObjectToRender(gameLogger);
+
     words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH).ToList();
     Column.SetRightWord(words[rnd.Next(0, words.Count())]);
     for (int i = 0; i < wordsByColumns.Length; i++)
     {
       wordsByColumns[i] = words.Skip(i * 8).Take(8).ToList();
     }
-    columns = new Column[]{
-      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/columnAmount,wordsByColumns[0].ToArray()),
-      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/columnAmount,wordsByColumns[1].ToArray())
+    columns = new Column[]{//!Test
+      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/columnAmount,wordsByColumns[0].ToArray(),1,0),
+      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/columnAmount,wordsByColumns[1].ToArray(),1,COLUMN_WIDTH + 2)
     };
-
     foreach (Column column in columns)
     {
       renderer.AddObjectToRender(column);
     }
-    Console.CursorVisible = false;
+
   }
   public bool Update()
   {
@@ -66,7 +76,7 @@ class Game
     }
     while (true)
     {
-      renderer.UpdateColumnRenderData(2, 2, 9);
+      renderer.UpdateColumnRenderData();
       renderer.Render();
       HandleInput();
       columns[selectedColumn].SelectElement(xCursorPosition + yCursorPosition * COLUMN_WIDTH);
@@ -120,7 +130,7 @@ class Game
     {
       case ExecutionCode.Mistake:
         {
-          attemptsLeft--;//TODO: do it with special function for ability to loose
+          LooseAttempt();
           break;
         }
       case ExecutionCode.CorrectWord:
@@ -138,8 +148,35 @@ class Game
           columns[rndCol].RemoveDud();
           break;
         }
+      case ExecutionCode.HintLife:
+        {
+          ResetAttempt();
+          break;
+        }
+      case ExecutionCode.WrongInput:
+        {
+          return;
+        }
+    }
+    gameLogger.AddGameLogs(column.GenerateLog(code, xCursorPosition + yCursorPosition * COLUMN_WIDTH));
+  }
+  private void LooseAttempt()
+  {
+    bool isLost = attempts.LooseAttemptAndCheckForLoose();
+    if (isLost)
+    {
+      LooseGame();
     }
   }
+  private void LooseGame()
+  {
+    throw new Exception("You lost :(");
+  }
+  private void ResetAttempt()
+  {
+    attemptsLeft = maxAttempts;
+  }
+
   private string[] GenerateRandomWords(int amount = 6, int length = 6)
   {
     HashSet<string> res = new HashSet<string>();
