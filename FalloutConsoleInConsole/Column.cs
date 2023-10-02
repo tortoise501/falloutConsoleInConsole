@@ -17,7 +17,7 @@ public class Column : IRenderable
   static Random rnd = new Random();
 
   /// <summary>
-  /// Array that store all elements
+  /// Array that store all elements   
   /// Elements are: symbols, words
   /// </summary>
   string[] columnByElements = new string[0];
@@ -150,32 +150,34 @@ public class Column : IRenderable
   public string GenerateLog(ExecutionCode executionCode, int selectedPos)
   {
     string el = columnByElements[posToElement[selectedPos]];
+    string res = "";
     if (executionCode == ExecutionCode.Mistake)
     {
       if (rightWord == null)
         throw new NullReferenceException();
-      return $">{el}\n>Entry Denied\n>Likeness={CheckForLikeness(el, rightWord)}";
+      res = $">{el}\n>Entry Denied\n>Likeness={CheckForLikeness(el, rightWord)}";
     }
     if (executionCode == ExecutionCode.CorrectWord)
     {
-      return $">{el}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
+      res = $">{el}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
       char[] hint = GetCharsOf(posToElement[selectedPos], hintPosData[posToElement[selectedPos]]).ToArray();
-      return $">{string.Join("", hint)}\n>Dud removed";
+      res = $">{string.Join("", hint)}\n>Dud removed";
     }
     if (executionCode == ExecutionCode.HintLife)
     {
-      return $"ATTEMPTS RESTORED";
+      res = $"ATTEMPTS RESTORED";
     }
     if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
     {
-      hintPosData.Remove(selectedPos);
+      hintPosData.Remove(posToElement[selectedPos]);
+      hintTypeData.Remove(posToElement[selectedPos]);
     }
-    return "";
+    return res;
   }
-  public void RemoveDud()//!public temporarily for Game class dud removal
+  public void RemoveDud(int selectedPos)//!public temporarily for Game class dud removal
   {
     if (posToWord.Count == 0)
     {

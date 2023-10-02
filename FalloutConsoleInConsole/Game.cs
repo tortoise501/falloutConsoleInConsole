@@ -18,6 +18,7 @@ class Game
   int xCursorPosition = 0;
   int yCursorPosition = 0;
   int selectedColumn = 0;
+  int selectedPos { get => xCursorPosition + yCursorPosition * COLUMN_WIDTH; }
 
   const int maxAttempts = 4;//!test
   int attemptsLeft = 4;//!test
@@ -79,7 +80,7 @@ class Game
       renderer.UpdateColumnRenderData();
       renderer.Render();
       HandleInput();
-      columns[selectedColumn].SelectElement(xCursorPosition + yCursorPosition * COLUMN_WIDTH);
+      columns[selectedColumn].SelectElement(selectedPos);
     }
   }
   void HandleInput()
@@ -126,6 +127,7 @@ class Game
   }
   public void ExecuteInput(ExecutionCode code, Column column)
   {
+    gameLogger.AddGameLogs(column.GenerateLog(code, selectedPos));
     switch (code)
     {
       case ExecutionCode.Mistake:
@@ -145,7 +147,7 @@ class Game
           {
             rndCol = rnd.Next(0, columns.Length);
           }
-          columns[rndCol].RemoveDud();
+          columns[rndCol].RemoveDud(selectedPos);
           break;
         }
       case ExecutionCode.HintLife:
@@ -158,7 +160,6 @@ class Game
           return;
         }
     }
-    gameLogger.AddGameLogs(column.GenerateLog(code, xCursorPosition + yCursorPosition * COLUMN_WIDTH));
   }
   private void LooseAttempt()
   {
