@@ -41,7 +41,7 @@ public class GameLogger : IRenderable
       res.Add(new List<RenderData>());
       foreach (char c in log)
       {
-        res.Last().Add(new RenderData(c, ConsoleColor.Black, ConsoleColor.Green));
+        res.Last().Add(new RenderData(c, CharacterState.notSelected));
       }
     }
     return res;

@@ -391,15 +391,15 @@ public class Column : IRenderable
       {
         if (x + y * columnWidth == selectorPos && isColumnSelected)
         {
-          res.Last().Add(new RenderData(c, ConsoleColor.DarkGreen, ConsoleColor.Black));
+          res.Last().Add(new RenderData(c, CharacterState.selectedAsChar));
         }
         else if (i == posToElement[selectorPos] && isColumnSelected)
         {
-          res.Last().Add(new RenderData(c, ConsoleColor.Green, ConsoleColor.Black));
+          res.Last().Add(new RenderData(c, CharacterState.selectedAsElement));
         }
         else
         {
-          res.Last().Add(new RenderData(c, ConsoleColor.Black, ConsoleColor.Green));
+          res.Last().Add(new RenderData(c, CharacterState.notSelected));
         }
         x++;
         if (x % columnWidth == 0)

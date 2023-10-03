@@ -78,7 +78,7 @@ class Game
     while (true)
     {
       renderer.UpdateColumnRenderData();
-      renderer.Render();
+      renderer.FastRender();
       HandleInput();
       columns[selectedColumn].SelectElement(selectedPos);
     }

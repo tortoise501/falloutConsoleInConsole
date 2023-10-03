@@ -1,3 +1,5 @@
+using System.Text;
+
 class ConsoleGameRenderer
 {
   const int ConsoleWidth = 60;
@@ -25,6 +27,10 @@ class ConsoleGameRenderer
       }
     }
   }
+
+  /// <summary>
+  /// Deprecated
+  /// </summary>
   public void Render()
   {
     Console.Clear();
@@ -40,9 +46,55 @@ class ConsoleGameRenderer
           continue;
         }
         RenderData character = renderData[y, x];
-        Console.BackgroundColor = character.backgroundColor;
-        Console.ForegroundColor = character.characterColor;
+        Console.BackgroundColor = Constants.CharStateToBackgroundColor[character.state];
+        Console.ForegroundColor = Constants.CharStateToBackgroundColor[character.state];
         Console.Write(character.character);
+      }
+      Console.WriteLine();
+    }
+  }
+
+
+
+  public void FastRender()
+  {
+    Console.Clear();
+    for (int y = 0; y < renderData.GetLength(0); y++)
+    {
+      StringBuilder sb = new StringBuilder();
+      for (int x = 0; x < renderData.GetLength(1); x++)
+      {
+        if (renderData[y, x] == null)
+        {
+          sb.Append(" ");
+          continue;
+        }
+        RenderData character = renderData[y, x];
+        if (character.state != CharacterState.notSelected)
+        {
+
+          if (sb.Capacity != 0)
+          {
+            Console.BackgroundColor = Constants.CharStateToBackgroundColor[CharacterState.notSelected];
+            Console.ForegroundColor = Constants.CharStateToCharColor[CharacterState.notSelected];
+            Console.Write(sb);
+            sb.Clear();
+          }
+          Console.BackgroundColor = Constants.CharStateToBackgroundColor[character.state];
+          Console.ForegroundColor = Constants.CharStateToBackgroundColor[character.state];
+          Console.Write(character.character);
+        }
+        else
+        {
+          sb.Append(character.character);
+        }
+
+      }
+      if (sb.Length != 0)
+      {
+        Console.BackgroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.Write(sb);
       }
       Console.WriteLine();
     }

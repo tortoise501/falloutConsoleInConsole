@@ -53,12 +53,16 @@ static class Constants
     '\\',
     '*'
   };
+
+
   static public readonly char[] Parentheses = new char[4]{
     '}',
     ')',
     '>',
     ']'
   };
+
+
   static public readonly Dictionary<char, char> GetOppositeParentheses = new Dictionary<char, char>()
   {
     {')','('},
@@ -66,6 +70,8 @@ static class Constants
     {']','['},
     {'>','<'}
   };
+
+
   static public bool IsParentheses(char c)
   {
     if (c == '[' || c == ']' || c == '{' || c == '}' || c == '(' || c == ')' || c == '<' || c == '>')
@@ -73,14 +79,26 @@ static class Constants
     else
       return false;
   }
+
+  static public Dictionary<CharacterState, ConsoleColor> CharStateToCharColor = new Dictionary<CharacterState, ConsoleColor>()
+  {
+    {CharacterState.notSelected,ConsoleColor.Green},
+    {CharacterState.selectedAsElement,ConsoleColor.Black},
+    {CharacterState.selectedAsChar,ConsoleColor.Black}
+  };
+  static public Dictionary<CharacterState, ConsoleColor> CharStateToBackgroundColor = new Dictionary<CharacterState, ConsoleColor>()
+  {
+    {CharacterState.notSelected,ConsoleColor.Black},
+    {CharacterState.selectedAsElement,ConsoleColor.Green},
+    {CharacterState.selectedAsChar,ConsoleColor.Blue}
+  };
 }
-// public enum ElementClass
-// {
-//   Word,
-//   Hint,
-//   Random,
-//   Processed
-// }
+public enum CharacterState
+{
+  notSelected,
+  selectedAsElement,
+  selectedAsChar
+}
 public enum ExecutionCode
 {
   WrongInput,

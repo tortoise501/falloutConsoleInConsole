@@ -29,19 +29,19 @@ public class Attempts : IRenderable
   {
     List<List<RenderData>> res = new List<List<RenderData>>();
     res.Add(new List<RenderData>());
-    res[0].Add(new RenderData('[', ConsoleColor.Black, ConsoleColor.Green));
+    res[0].Add(new RenderData('[', CharacterState.notSelected));
     for (int i = 0; i < maxAttempts; i++)
     {
       if (i < attemptsLeft)
       {
-        res[0].Add(new RenderData('\u25A0', ConsoleColor.Black, ConsoleColor.Green));
+        res[0].Add(new RenderData('\u25A0', CharacterState.notSelected));
       }
       else
       {
-        res[0].Add(new RenderData(' ', ConsoleColor.Black, ConsoleColor.Green));
+        res[0].Add(new RenderData(' ', CharacterState.notSelected));
       }
     }
-    res[0].Add(new RenderData(']', ConsoleColor.Black, ConsoleColor.Green));
+    res[0].Add(new RenderData(']', CharacterState.notSelected));
     return res;
   }
   public bool LooseAttemptAndCheckForLoose()
