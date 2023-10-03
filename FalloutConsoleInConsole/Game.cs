@@ -4,6 +4,8 @@ using System.Reflection.PortableExecutable;
 //test
 class Game
 {
+  public GameState gameState { get; private set; } = GameState.InProgress;
+
   Random rnd = new Random();
   const int COLUMN_WIDTH = 9;
   const int COLUMN_HEIGHT = 16;
@@ -79,9 +81,14 @@ class Game
     {
       renderer.UpdateColumnRenderData();
       renderer.FastRender();
+      if (gameState != GameState.InProgress)
+      {
+        break;
+      }
       HandleInput();
       columns[selectedColumn].SelectElement(selectedPos);
     }
+    return true;
   }
   void HandleInput()
   {
@@ -137,8 +144,9 @@ class Game
         }
       case ExecutionCode.CorrectWord:
         {
-          throw new Exception("YOU WON!!! sorry for exception");//TODO: Do it properly
-          // break;
+          gameState = GameState.Won;
+          // throw new Exception("YOU WON!!! sorry for exception");//TODO: Do it properly
+          break;
         }
       case ExecutionCode.HintDuds:
         {
@@ -161,6 +169,7 @@ class Game
         }
     }
   }
+
   private void LooseAttempt()
   {
     bool isLost = attempts.LooseAttemptAndCheckForLoose();
@@ -171,7 +180,8 @@ class Game
   }
   private void LooseGame()
   {
-    throw new Exception("You lost :(");
+    gameState = GameState.Lost;
+    // throw new Exception("You lost :(");
   }
   private void ResetAttempt()
   {
