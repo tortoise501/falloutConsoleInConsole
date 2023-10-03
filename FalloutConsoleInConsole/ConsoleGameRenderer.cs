@@ -81,7 +81,7 @@ class ConsoleGameRenderer
             sb.Clear();
           }
           Console.BackgroundColor = Constants.CharStateToBackgroundColor[character.state];
-          Console.ForegroundColor = Constants.CharStateToBackgroundColor[character.state];
+          Console.ForegroundColor = Constants.CharStateToCharColor[character.state];
           Console.Write(character.character);
         }
         else
@@ -92,8 +92,8 @@ class ConsoleGameRenderer
       }
       if (sb.Length != 0)
       {
-        Console.BackgroundColor = ConsoleColor.Black;
-        Console.ForegroundColor = ConsoleColor.Green;
+        Console.BackgroundColor = Constants.CharStateToBackgroundColor[CharacterState.notSelected];
+        Console.ForegroundColor = Constants.CharStateToCharColor[CharacterState.notSelected];
         Console.Write(sb);
       }
       Console.WriteLine();

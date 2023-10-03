@@ -2,13 +2,6 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-//TODO ---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// TODOs:
-// -Life Hint
-//?-Better hint creation(Probably finished)
-// -Make Logging as a class, for better rendering
-//
-//
 //!Problems:
 //!A lot of possible infinite loops during column generation
 //!Reserve hint generation doesn't work sometimes
@@ -41,8 +34,8 @@ public class Column : IRenderable
 
   //*----------------------------------------------------------------------Attempts
   //TODO: integrate this parameters to constructor
-  int maxAttempts = 4;
-  int attemptsLeft = 4;
+  // int maxAttempts = 4;
+  // int attemptsLeft = 4;
 
   //*----------------------------------------------------------------------Data dictionaries
   /// <summary>
