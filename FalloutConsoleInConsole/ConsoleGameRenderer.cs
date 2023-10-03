@@ -98,6 +98,13 @@ class ConsoleGameRenderer
       }
       Console.WriteLine();
     }
+    for (int y = 0; y < renderData.GetLength(0); y++)
+    {
+      for (int x = 0; x < renderData.GetLength(1); x++)
+      {
+        renderData[y, x] = null;
+      }
+    }
   }
   public void AddObjectToRender(IRenderable objectToRender)
   {

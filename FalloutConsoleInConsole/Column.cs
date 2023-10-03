@@ -73,8 +73,8 @@ public class Column : IRenderable
   bool isColumnSelected = false;
 
   //*----------------------------------------------------------------------LOG
-  int logLength = 7;
-  Queue<string> gameLogs = new Queue<string>();
+  // int logLength = 7;
+  // Queue<string> gameLogs = new Queue<string>();
 
 
 

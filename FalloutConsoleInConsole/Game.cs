@@ -134,7 +134,11 @@ class Game
   }
   public void ExecuteInput(ExecutionCode code, Column column)
   {
-    gameLogger.AddGameLogs(column.GenerateLog(code, selectedPos));
+    string log = column.GenerateLog(code, selectedPos);
+    if (log.Length > 1)
+    {
+      gameLogger.AddGameLogs(log);
+    }
     switch (code)
     {
       case ExecutionCode.Mistake:
