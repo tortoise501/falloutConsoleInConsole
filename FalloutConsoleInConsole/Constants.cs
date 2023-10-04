@@ -1,50 +1,39 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 static class Constants
 {
-  static public readonly string[][] WordsPull = new string[5][]
+  static public WordsPull wordsPull = new WordsPull();
+  static public void LoadWordsPull(WordsPull pull)
   {
-    new string[]
-    {
-        "book", "desk", "lamp", "moon", "star", "tree", "bird", "fish",
-        "frog", "ball", "door", "rock", "bell", "fire", "food", "kite",
-        "lake", "leaf", "milk", "nest"
-    },
-    new string[]
-    {
-        "apple", "chair", "horse", "mouse", "snake", "table", "house", "train",
-        "beach", "clock", "glove", "knife", "cloud", "shoes", "socks", "pearl",
-        "flute", "ghost", "leafy", "light"
-    },
-    new string[]
-    {
-        "pencil", "turtle", "rabbit", "rocket", "candle", "guitar", "switch", "flower",
-        "pillow", "butter", "laptop", "window", "orange", "banana", "muffin", "router",
-        "spider", "apples", "school", "lemons"
-    },
-    new string[]
-    {
-        "friends", "helmets", "tunnels", "blocker", "cottage", "diamond", "fortune", "trailer",
-        "kitchen", "library", "monster", "package", "rolling", "rainbow", "whistle", "vampire",
-        "whisper", "mailbox", "through", "manager"
-    },
-    new string[]
-    {
-        "capture", "dinosaur", "football", "generator", "microscope", "photograph", "revolution", "television",
-        "university", "volunteer", "watermelon", "xylophone", "celebrate", "fascinate", "happiness", "integrate",
-        "juxtapose", "legitimate", "overwhelm", "provocative"
-    }
-  };
+    wordsPull = pull;
+  }
+
+
+  static public Settings settings = new Settings();
+  static public void LoadSettings(Settings settings)
+  {
+    Constants.settings = settings;
+    UpdateColors();
+  }
+  static private void UpdateColors()
+  {
+    CharStateToBackgroundColor[CharacterState.notSelected] = settings.notSelectedBackground;
+    CharStateToBackgroundColor[CharacterState.selectedAsElement] = settings.selectedAsElementBackground;
+    CharStateToBackgroundColor[CharacterState.selectedAsChar] = settings.selectedAsCharBackground;
+
+    CharStateToCharColor[CharacterState.notSelected] = settings.notSelectedChar;
+    CharStateToCharColor[CharacterState.selectedAsElement] = settings.selectedAsElementChar;
+    CharStateToCharColor[CharacterState.selectedAsChar] = settings.selectedAsCharChar;
+  }
+
+
   static public readonly char[] symbols = {
-    // '{',
     '}',
-    // '[',
     ']',
-    // '(',
     ')',
-    //'F',//'F' is a false parenthesis     'S' is start 'E' is end 
     '#',
     '%',
     ',',

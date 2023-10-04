@@ -4,6 +4,7 @@ using System.Reflection.PortableExecutable;
 //test
 class Game
 {
+
   public GameState gameState { get; private set; } = GameState.InProgress;
 
   Random rnd = new Random();
@@ -16,6 +17,8 @@ class Game
   const int ADDRESS_WIDTH = 6;
   const int ADDRESS_HEIGHT = COLUMN_HEIGHT;
 
+  const int LOGGER_HEIGHT = 16;
+
 
   bool isStarted = false;
   const int columnAmount = 2;//!for tests
@@ -27,8 +30,7 @@ class Game
   int selectedColumn = 0;
   int selectedPos { get => xCursorPosition + yCursorPosition * COLUMN_WIDTH; }
 
-  const int MAX_ATTEMPTS = 4;//!test
-  // int attemptsLeft = 4;//!test
+  const int MAX_ATTEMPTS = 4;
   Attempts attempts = new Attempts(MAX_ATTEMPTS);
 
   GameLogger gameLogger = new GameLogger(COLUMN_HEIGHT);
@@ -52,6 +54,10 @@ class Game
   }
   public void Start()
   {
+    // FileSystem testFileSystem = new FileSystem();
+    // testFileSystem.WriteTextToTestFile(new string[] { "first line", "second line", "third line" });
+
+
     isStarted = true;
     Console.Clear();
     Console.CursorVisible = false;
@@ -59,7 +65,7 @@ class Game
     attempts = new Attempts(MAX_ATTEMPTS, 0, 0);
     renderer.AddObjectToRender(attempts);
 
-    gameLogger = new GameLogger(COLUMN_HEIGHT, COLUMN_WIDTH * columnAmount + 2 * columnAmount, 1);
+    gameLogger = new GameLogger(LOGGER_HEIGHT, COLUMN_WIDTH * columnAmount + 2 * columnAmount, 1);
     renderer.AddObjectToRender(gameLogger);
 
     renderer.AddObjectToRender(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, 0, 1));
@@ -209,7 +215,7 @@ class Game
     int SafetyCounter = 0;
     while (res.Count() != amount)
     {
-      res.Add(Constants.WordsPull[length - 4][rnd.Next(0, Constants.WordsPull[length - 4].Length - 1)]);
+      res.Add(Constants.wordsPull.words[length - 4][rnd.Next(0, Constants.wordsPull.words[length - 4].Length - 1)]);
       if (SafetyCounter > 100)
       {
         break;
