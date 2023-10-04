@@ -102,7 +102,7 @@ class ConsoleGameRenderer
     {
       for (int x = 0; x < renderData.GetLength(1); x++)
       {
-        renderData[y, x] = null;
+        renderData[y, x] = new RenderData(' ');
       }
     }
   }

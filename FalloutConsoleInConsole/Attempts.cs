@@ -53,6 +53,10 @@ public class Attempts : IRenderable
     }
     return false;
   }
+  public void ResetAttempts()
+  {
+    attemptsLeft = maxAttempts;
+  }
   int x;
   int y;
 }

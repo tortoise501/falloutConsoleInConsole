@@ -27,9 +27,9 @@ class Game
   int selectedColumn = 0;
   int selectedPos { get => xCursorPosition + yCursorPosition * COLUMN_WIDTH; }
 
-  const int maxAttempts = 4;//!test
-  int attemptsLeft = 4;//!test
-  Attempts attempts = new Attempts(maxAttempts);
+  const int MAX_ATTEMPTS = 4;//!test
+  // int attemptsLeft = 4;//!test
+  Attempts attempts = new Attempts(MAX_ATTEMPTS);
 
   GameLogger gameLogger = new GameLogger(COLUMN_HEIGHT);
 
@@ -56,7 +56,7 @@ class Game
     Console.Clear();
     Console.CursorVisible = false;
 
-    attempts = new Attempts(maxAttempts, 0, 0);
+    attempts = new Attempts(MAX_ATTEMPTS, 0, 0);
     renderer.AddObjectToRender(attempts);
 
     gameLogger = new GameLogger(COLUMN_HEIGHT, COLUMN_WIDTH * columnAmount + 2 * columnAmount, 1);
@@ -199,7 +199,8 @@ class Game
   }
   private void ResetAttempt()
   {
-    attemptsLeft = maxAttempts;
+    // attemptsLeft = MAX_ATTEMPTS;
+    attempts.ResetAttempts();
   }
 
   private string[] GenerateRandomWords(int amount = 6, int length = 6)
