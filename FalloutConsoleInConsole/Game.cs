@@ -8,20 +8,20 @@ class Game
   public GameState gameState { get; private set; } = GameState.InProgress;
 
   Random rnd = new Random();
-  const int COLUMN_WIDTH = 12;
-  const int COLUMN_HEIGHT = 16;
+  readonly int COLUMN_WIDTH;
+  readonly int COLUMN_HEIGHT;
 
-  const int WORD_AMOUNT = 16;
-  const int WORD_LENGTH = 6;
+  readonly int WORD_AMOUNT;
+  readonly int WORD_LENGTH;
 
-  const int ADDRESS_WIDTH = 6;
-  const int ADDRESS_HEIGHT = COLUMN_HEIGHT;
+  readonly int ADDRESS_WIDTH;
+  readonly int ADDRESS_HEIGHT;
 
-  const int LOGGER_HEIGHT = 16;
+  readonly int LOGGER_HEIGHT;
 
 
   bool isStarted = false;
-  const int columnAmount = 2;//!for tests
+  readonly int COLUMN_AMOUNT;//!for tests
 
 
 
@@ -30,19 +30,28 @@ class Game
   int selectedColumn = 0;
   int selectedPos { get => xCursorPosition + yCursorPosition * COLUMN_WIDTH; }
 
-  const int MAX_ATTEMPTS = 4;
-  Attempts attempts = new Attempts(MAX_ATTEMPTS);
+  readonly int MAX_ATTEMPTS;
+  Attempts attempts;// = new Attempts(MAX_ATTEMPTS);
 
-  GameLogger gameLogger = new GameLogger(COLUMN_HEIGHT);
+  GameLogger gameLogger;// = new GameLogger(COLUMN_HEIGHT);
 
   ConsoleGameRenderer renderer = new ConsoleGameRenderer();
-  Column[] columns = new Column[columnAmount];
+  Column[] columns;// = new Column[COLUMN_AMOUNT];
   List<string> words = new List<string>();
-  List<string>[] wordsByColumns = new List<string>[columnAmount];
+  List<string>[] wordsByColumns;// = new List<string>[COLUMN_AMOUNT];
 
 
-  public Game(bool update = false, bool start = true)
+  public Game(Settings settings, bool update = false, bool start = true)
   {
+    COLUMN_WIDTH = settings.ColumnWidth;
+    COLUMN_HEIGHT = settings.ColumnHeight;
+    WORD_AMOUNT = settings.WordAmount;
+    WORD_LENGTH = settings.WordLength;
+    ADDRESS_WIDTH = settings.AddressWidth;
+    ADDRESS_HEIGHT = settings.AddressHeight;
+    MAX_ATTEMPTS = settings.MaxAttempts;
+    COLUMN_AMOUNT = settings.ColumnAmount;
+
     if (start)
     {
       Start();
@@ -65,7 +74,7 @@ class Game
     attempts = new Attempts(MAX_ATTEMPTS, 0, 0);
     renderer.AddObjectToRender(attempts);
 
-    gameLogger = new GameLogger(LOGGER_HEIGHT, COLUMN_WIDTH * columnAmount + 2 * columnAmount, 1);
+    gameLogger = new GameLogger(LOGGER_HEIGHT, COLUMN_WIDTH * COLUMN_AMOUNT + 2 * COLUMN_AMOUNT, 1);
     renderer.AddObjectToRender(gameLogger);
 
     renderer.AddObjectToRender(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, 0, 1));
@@ -73,13 +82,14 @@ class Game
 
     words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH).ToList();
     Column.SetRightWord(words[rnd.Next(0, words.Count())]);
+    wordsByColumns = new List<string>[COLUMN_AMOUNT];
     for (int i = 0; i < wordsByColumns.Length; i++)
     {
       wordsByColumns[i] = words.Skip(i * 8).Take(8).ToList();
     }
     columns = new Column[]{//!Test
-      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/columnAmount,wordsByColumns[0].ToArray(),1,ADDRESS_WIDTH + 1),
-      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/columnAmount,wordsByColumns[1].ToArray(),1,COLUMN_WIDTH + ADDRESS_WIDTH + 3 + ADDRESS_WIDTH)
+      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/COLUMN_AMOUNT,wordsByColumns[0].ToArray(),1,ADDRESS_WIDTH + 1),
+      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/COLUMN_AMOUNT,wordsByColumns[1].ToArray(),1,COLUMN_WIDTH + ADDRESS_WIDTH + 3 + ADDRESS_WIDTH)
     };
     foreach (Column column in columns)
     {
@@ -127,7 +137,7 @@ class Game
           if (xCursorPosition > COLUMN_WIDTH - 1)
           {
             xCursorPosition = 0;
-            selectedColumn = Math.Min(columnAmount - 1, selectedColumn + 1);
+            selectedColumn = Math.Min(COLUMN_AMOUNT - 1, selectedColumn + 1);
           }
           break;
         }

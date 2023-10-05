@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Xml.Serialization;
-using Microsoft.VisualBasic;
 //test
 class Program
 {
@@ -35,7 +34,7 @@ class Program
     }
     Constants.LoadSettings(settings);
     Console.ReadKey();
-    Game game = new Game(true);
+    Game game = new Game(settings, true);
   }
 
 
