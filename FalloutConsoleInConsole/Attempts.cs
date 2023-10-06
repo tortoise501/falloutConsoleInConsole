@@ -27,22 +27,28 @@ public class Attempts : IRenderable
 
   List<List<RenderData>> IRenderable.GetRenderData()
   {
-    List<List<RenderData>> res = new List<List<RenderData>>();
-    res.Add(new List<RenderData>());
-    res[0].Add(new RenderData('[', CharacterState.notSelected));
-    for (int i = 0; i < maxAttempts; i++)
+    string textToRender = $"{attemptsLeft} Attempt(s) Left: ";
+    for (int i = 0; i < attemptsLeft; i++)
     {
-      if (i < attemptsLeft)
-      {
-        res[0].Add(new RenderData('\u25A0', CharacterState.notSelected));
-      }
-      else
-      {
-        res[0].Add(new RenderData(' ', CharacterState.notSelected));
-      }
+      textToRender += "\u25A0 ";
     }
-    res[0].Add(new RenderData(']', CharacterState.notSelected));
-    return res;
+    return new List<List<RenderData>>() { textToRender.Select(x => new RenderData(x, CharacterState.notSelected)).ToList() };
+    // List<List<RenderData>> res = new List<List<RenderData>>();
+    // res.Add(new List<RenderData>());
+    // res[0].Add(new RenderData('[', CharacterState.notSelected));
+    // for (int i = 0; i < maxAttempts; i++)
+    // {
+    //   if (i < attemptsLeft)
+    //   {
+    //     res[0].Add(new RenderData('\u25A0', CharacterState.notSelected));
+    //   }
+    //   else
+    //   {
+    //     res[0].Add(new RenderData(' ', CharacterState.notSelected));
+    //   }
+    // }
+    // res[0].Add(new RenderData(']', CharacterState.notSelected));
+    // return res;
   }
   public bool LooseAttemptAndCheckForLoose()
   {
