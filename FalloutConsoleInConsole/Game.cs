@@ -72,14 +72,6 @@ class Game
     Console.Clear();
     Console.CursorVisible = false;
 
-    attempts = new Attempts(MAX_ATTEMPTS, 0, 0);
-    renderer.AddObjectToRender(attempts);
-
-    gameLogger = new GameLogger(LOGGER_HEIGHT, COLUMN_WIDTH * COLUMN_AMOUNT + ADDRESS_WIDTH * 2 + 4, 1);
-    renderer.AddObjectToRender(gameLogger);
-
-    renderer.AddObjectToRender(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, 0, 1));
-    renderer.AddObjectToRender(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, COLUMN_WIDTH + ADDRESS_WIDTH + 2, 1));
 
     words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH).ToList();
     Column.SetRightWord(words[rnd.Next(0, words.Count())]);
@@ -88,13 +80,29 @@ class Game
     {
       wordsByColumns[i] = words.Skip(i * 8).Take(8).ToList();
     }
-    columns = new Column[]{//!Test
-      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/COLUMN_AMOUNT,wordsByColumns[0].ToArray(),1,ADDRESS_WIDTH + 1),
-      new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT/COLUMN_AMOUNT,wordsByColumns[1].ToArray(),1,COLUMN_WIDTH + ADDRESS_WIDTH + 3 + ADDRESS_WIDTH)
-    };
-    foreach (Column column in columns)
+
+    columns = new Column[COLUMN_AMOUNT];
+    List<IRenderable> addToRender = new List<IRenderable>();
+    int y = 3;
+    int spaceBetweenElements = 1;//TODO make it a setting
+    int x = 0;
+    attempts = new Attempts(MAX_ATTEMPTS, 0, 1);
+    addToRender.Add(attempts);
+    for (int i = 0; i < COLUMN_AMOUNT; i++)
     {
-      renderer.AddObjectToRender(column);
+      addToRender.Add(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, x, y));
+      x += ADDRESS_WIDTH + spaceBetweenElements;
+      columns[i] = new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT / COLUMN_AMOUNT, wordsByColumns[0].ToArray(), y, x);
+      addToRender.Add(columns[i]);
+      x += COLUMN_WIDTH + spaceBetweenElements;
+    }
+    gameLogger = new GameLogger(LOGGER_HEIGHT, x, y);
+    addToRender.Add(gameLogger);
+
+
+    foreach (IRenderable elementToRender in addToRender)
+    {
+      renderer.AddObjectToRender(elementToRender);
     }
 
   }
