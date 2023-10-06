@@ -51,6 +51,7 @@ class Game
     ADDRESS_HEIGHT = settings.AddressHeight;
     MAX_ATTEMPTS = settings.MaxAttempts;
     COLUMN_AMOUNT = settings.ColumnAmount;
+    LOGGER_HEIGHT = settings.LoggerHeight;
 
     if (start)
     {
@@ -74,7 +75,7 @@ class Game
     attempts = new Attempts(MAX_ATTEMPTS, 0, 0);
     renderer.AddObjectToRender(attempts);
 
-    gameLogger = new GameLogger(LOGGER_HEIGHT, COLUMN_WIDTH * COLUMN_AMOUNT + 2 * COLUMN_AMOUNT, 1);
+    gameLogger = new GameLogger(LOGGER_HEIGHT, COLUMN_WIDTH * COLUMN_AMOUNT + ADDRESS_WIDTH * 2 + 4, 1);
     renderer.AddObjectToRender(gameLogger);
 
     renderer.AddObjectToRender(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, 0, 1));

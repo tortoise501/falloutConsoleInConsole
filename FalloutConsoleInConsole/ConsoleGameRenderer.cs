@@ -2,7 +2,7 @@ using System.Text;
 
 class ConsoleGameRenderer
 {
-  const int ConsoleWidth = 60;
+  const int ConsoleWidth = 100;
   const int ConsoleHeight = 20;
   private RenderData[,] renderData = new RenderData[ConsoleHeight, ConsoleWidth];
   private List<IRenderable> objectsToRender = new List<IRenderable>();
