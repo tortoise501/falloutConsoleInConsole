@@ -407,7 +407,7 @@ public class Column : IRenderable
         {
           res.Last().Add(new RenderData(c, CharacterState.selectedAsChar));
         }
-        else if (i == posToElement[selectorPos] && isColumnSelected)
+        else if (i == posToElement[selectorPos] && isColumnSelected && c != '.')
         {
           res.Last().Add(new RenderData(c, CharacterState.selectedAsElement));
         }
