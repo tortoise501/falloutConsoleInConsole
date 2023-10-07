@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Dynamic;
 //!Problems:
 //!A lot of possible infinite loops during column generation
 //!Reserve hint generation doesn't work sometimes
@@ -405,6 +406,10 @@ public class Column : IRenderable
     }
     isColumnSelected = false;//expire "selection"
     return res;
+  }
+  public string GetElement(int pos)
+  {
+    return columnByElements[posToElement[pos]];
   }
 
   public void SelectElement(int posOfCursor)

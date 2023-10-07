@@ -166,6 +166,7 @@ class Game
           break;
         }
     }
+    gameLogger.SetSelectedElement(columns[selectedColumn].GetElement(selectedPos));
   }
   public void ExecuteInput(ExecutionCode code, Column column)
   {
@@ -241,6 +242,6 @@ class Game
       }
       SafetyCounter++;
     }
-    return res.ToArray();
+    return res.Select(x => x.ToUpper()).ToArray();
   }
 }
