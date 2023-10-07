@@ -72,7 +72,7 @@ public class Column : IRenderable
 
 
 
-  public Column(int width, int height, int wordLength, int wordAmount, string[] words, int y = 0, int x = 0)
+  public Column(int width, int height, int wordLength, int wordAmount, string[] words, int y = 0, int x = 0, int hintAmount = 4, int resetAttemptsHintAmount = 0)
   {
     this.x = x;
     this.y = y;
@@ -85,7 +85,7 @@ public class Column : IRenderable
     // rightWord = words[rnd.Next(0, wordAmount - 1)];//!test
     columnByElements = GenerateColumn(words, columnWidth, columnHeight, this.wordLength, this.wordAmount);
     posToElement = MapPosToElements(columnByElements);
-    hintPosData = GenerateHintData(columnWidth);
+    hintPosData = GenerateHintData(columnWidth, hintAmount, resetAttemptsHintAmount);
     PlaceRandomSymbols();
     //TODO: there is no sense in all those functions to return value, they can just modify global variables 
     // string[] testToDelete = NewGenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
@@ -122,7 +122,14 @@ public class Column : IRenderable
     }
     if (hintPosData.ContainsKey(selectedIndex))//is this a hint
     {
-      return ExecutionCode.HintDuds;
+      if (hintTypeData[selectedIndex] == HintType.Dud)
+      {
+        return ExecutionCode.HintDuds;
+      }
+      else
+      {
+        return ExecutionCode.HintLife;
+      }
       //TODO: Add HintLife execution with certain chance
     }
     if (selectedItem.Length > 1)//is it a wrong word
@@ -256,7 +263,7 @@ public class Column : IRenderable
   /// <param name="elements">array of elements</param>
   /// <param name="rowWidth">width of each column row</param>
   /// <returns></returns>
-  private Dictionary<int, int> GenerateHintData(int rowWidth, int hintAmount = 4)
+  private Dictionary<int, int> GenerateHintData(int rowWidth, int hintAmount, int resetAttemptsHintAmount)
   {
     Dictionary<int, int> res = new Dictionary<int, int>();
     int count = columnByElements.Count(x => x.Length > 1);
@@ -274,7 +281,18 @@ public class Column : IRenderable
       }
       i--;
     }
-
+    HashSet<int> resetAttemptHintsOrder = new HashSet<int>();//witch hints reset attempt 
+    for (int i = 0; i < resetAttemptsHintAmount; i++)//!Possible infinite loops
+    {
+      int index = rnd.Next(0, hintAmount);
+      if (!resetAttemptHintsOrder.Contains(index))
+      {
+        resetAttemptHintsOrder.Add(index);
+        continue;
+      }
+      i--;
+    }
+    int hintNumber = 0;
 
     foreach (int pos in randomHintPos)
     {
@@ -323,6 +341,8 @@ public class Column : IRenderable
           }
           spawnedHints += 1;
           res.Add(i, endingPos - i);
+          hintTypeData.Add(i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);
+          hintNumber++;
         }
       }
     }

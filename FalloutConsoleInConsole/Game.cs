@@ -21,8 +21,10 @@ class Game
 
 
   bool isStarted = false;
-  readonly int COLUMN_AMOUNT;//!for tests
+  readonly int COLUMN_AMOUNT;
 
+  readonly int HINT_AMOUNT;
+  const int RESET_ATTEMPTS_HINT_AMOUNT = 1;//!DO not put in settings
 
 
   int xCursorPosition = 0;
@@ -52,6 +54,7 @@ class Game
     MAX_ATTEMPTS = settings.MaxAttempts;
     COLUMN_AMOUNT = settings.ColumnAmount;
     LOGGER_HEIGHT = settings.LoggerHeight;
+    HINT_AMOUNT = 8;//!add to settings
 
     if (start)
     {
@@ -81,6 +84,8 @@ class Game
       wordsByColumns[i] = words.Skip(i * 8).Take(8).ToList();
     }
 
+    int columnWithResetHint = rnd.Next(0, COLUMN_AMOUNT);
+
     columns = new Column[COLUMN_AMOUNT];
     List<IRenderable> addToRender = new List<IRenderable>();
     int y = 3;
@@ -92,7 +97,8 @@ class Game
     {
       addToRender.Add(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, x, y));
       x += ADDRESS_WIDTH + spaceBetweenElements;
-      columns[i] = new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT / COLUMN_AMOUNT, wordsByColumns[0].ToArray(), y, x);
+      //!change hint amount
+      columns[i] = new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT / COLUMN_AMOUNT, wordsByColumns[0].ToArray(), y, x, HINT_AMOUNT / COLUMN_AMOUNT, i == columnWithResetHint ? RESET_ATTEMPTS_HINT_AMOUNT : 0);
       addToRender.Add(columns[i]);
       x += COLUMN_WIDTH + spaceBetweenElements;
     }
