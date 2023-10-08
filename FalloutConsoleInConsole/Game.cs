@@ -98,7 +98,7 @@ class Game
       addToRender.Add(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, x, y));
       x += ADDRESS_WIDTH + spaceBetweenElements;
       //!change hint amount
-      columns[i] = new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT / COLUMN_AMOUNT, wordsByColumns[0].ToArray(), y, x, HINT_AMOUNT / COLUMN_AMOUNT, i == columnWithResetHint ? RESET_ATTEMPTS_HINT_AMOUNT : 0);
+      columns[i] = new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT / COLUMN_AMOUNT, wordsByColumns[i].ToArray(), y, x, HINT_AMOUNT / COLUMN_AMOUNT, i == columnWithResetHint ? RESET_ATTEMPTS_HINT_AMOUNT : 0);
       addToRender.Add(columns[i]);
       x += COLUMN_WIDTH + spaceBetweenElements;
     }
