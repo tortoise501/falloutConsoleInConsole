@@ -67,10 +67,6 @@ class Game
   }
   public void Start()
   {
-    // FileSystem testFileSystem = new FileSystem();
-    // testFileSystem.WriteTextToTestFile(new string[] { "first line", "second line", "third line" });
-
-
     isStarted = true;
     Console.Clear();
     Console.CursorVisible = false;
@@ -191,7 +187,6 @@ class Game
       case ExecutionCode.CorrectWord:
         {
           gameState = GameState.Won;
-          // throw new Exception("YOU WON!!! sorry for exception");//TODO: Do it properly
           break;
         }
       case ExecutionCode.HintDuds:
@@ -227,11 +222,9 @@ class Game
   private void LooseGame()
   {
     gameState = GameState.Lost;
-    // throw new Exception("You lost :(");
   }
   private void ResetAttempt()
   {
-    // attemptsLeft = MAX_ATTEMPTS;
     attempts.ResetAttempts();
   }
 

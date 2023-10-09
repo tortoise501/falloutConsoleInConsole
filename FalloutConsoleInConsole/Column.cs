@@ -12,7 +12,6 @@ public class Column : IRenderable
 
   /// <summary>
   /// Array that store all elements   
-  /// Elements are: symbols, words
   /// </summary>
   string[] columnByElements = new string[0];
   readonly int columnWidth;
@@ -29,14 +28,6 @@ public class Column : IRenderable
       Column.rightWord = rightWord;
     }
   }
-  readonly int wordLength;
-  readonly int wordAmount;
-
-
-  //*----------------------------------------------------------------------Attempts
-  //TODO: integrate this parameters to constructor
-  // int maxAttempts = 4;
-  // int attemptsLeft = 4;
 
   //*----------------------------------------------------------------------Data dictionaries
   /// <summary>
@@ -49,18 +40,18 @@ public class Column : IRenderable
   /// Key = Index,
   /// Value = length of hint
   /// </summary>
-  Dictionary<int, int> hintPosData;
+  Dictionary<int, int> indexToHintPos;
   /// <summary>
   /// Key = Index,
   /// Value = Type of hint
   /// </summary>
-  Dictionary<int, HintType> hintTypeData = new Dictionary<int, HintType>();
+  Dictionary<int, HintType> indexToHintType = new Dictionary<int, HintType>();
 
   /// <summary>
   /// Key = index
   /// Value = Word on that place
   /// </summary>
-  Dictionary<int, string> posToWord = new Dictionary<int, string>();
+  Dictionary<int, string> indexToWord = new Dictionary<int, string>();
 
   //!probably deprecated
   int selectorPos = 0;  //selected position(as character index)
@@ -79,13 +70,11 @@ public class Column : IRenderable
 
     columnWidth = width;
     columnHeight = height;
-    this.wordLength = wordLength;
-    this.wordAmount = wordAmount;
     this.words = words; //GenerateRandomWords(this.wordAmount, this.wordLength);
     // rightWord = words[rnd.Next(0, wordAmount - 1)];//!test
-    columnByElements = GenerateColumn(words, columnWidth, columnHeight, this.wordLength, this.wordAmount);
+    columnByElements = GenerateColumn(words, columnWidth, columnHeight, wordLength, wordAmount);
     posToElement = MapPosToElements(columnByElements);
-    hintPosData = GenerateHintData(columnWidth, hintAmount, resetAttemptsHintAmount);
+    indexToHintPos = GenerateHintData(columnWidth, hintAmount, resetAttemptsHintAmount);
     PlaceRandomSymbols();
     //TODO: there is no sense in all those functions to return value, they can just modify global variables 
     // string[] testToDelete = NewGenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
@@ -120,9 +109,9 @@ public class Column : IRenderable
     {
       return ExecutionCode.CorrectWord;
     }
-    if (hintPosData.ContainsKey(selectedIndex))//is this a hint
+    if (indexToHintPos.ContainsKey(selectedIndex))//is this a hint
     {
-      if (hintTypeData[selectedIndex] == HintType.Dud)
+      if (indexToHintType[selectedIndex] == HintType.Dud)
       {
         return ExecutionCode.HintDuds;
       }
@@ -130,7 +119,6 @@ public class Column : IRenderable
       {
         return ExecutionCode.HintLife;
       }
-      //TODO: Add HintLife execution with certain chance
     }
     if (selectedItem.Length > 1)//is it a wrong word
     {
@@ -141,11 +129,6 @@ public class Column : IRenderable
       return ExecutionCode.WrongInput;
     }
   }
-
-  // public string GetSelectedElement(int pos)
-  // {
-  //   return columnByElements[posToElement[pos]];
-  // }
 
 
   public string GenerateLog(ExecutionCode executionCode, int selectedPos)
@@ -164,7 +147,7 @@ public class Column : IRenderable
     }
     if (executionCode == ExecutionCode.HintDuds)
     {
-      char[] hint = GetCharsOf(posToElement[selectedPos], hintPosData[posToElement[selectedPos]]).ToArray();
+      char[] hint = GetCharsOf(posToElement[selectedPos], indexToHintPos[posToElement[selectedPos]]).ToArray();
       res = $">{string.Join("", hint)}\n>Dud removed";
     }
     if (executionCode == ExecutionCode.HintLife)
@@ -173,19 +156,19 @@ public class Column : IRenderable
     }
     if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
     {
-      hintPosData.Remove(posToElement[selectedPos]);
-      hintTypeData.Remove(posToElement[selectedPos]);
+      indexToHintPos.Remove(posToElement[selectedPos]);
+      indexToHintType.Remove(posToElement[selectedPos]);
     }
     return res;
   }
   public void RemoveDud(int selectedPos)//!public temporarily for Game class dud removal
   {
-    if (posToWord.Count == 0)
+    if (indexToWord.Count == 0)
     {
       return;
     }
-    int randomWordIndex = rnd.Next(0, posToWord.Count);
-    List<int> poses = Enumerable.ToList(posToWord.Keys);
+    int randomWordIndex = rnd.Next(0, indexToWord.Count);
+    List<int> poses = Enumerable.ToList(indexToWord.Keys);
     int posToReplace = poses[randomWordIndex];
     string replacement = "";
     for (int i = 0; i < columnByElements[posToReplace].Length; i++)
@@ -193,7 +176,7 @@ public class Column : IRenderable
       replacement += ".";
     }
     columnByElements[posToReplace] = replacement;
-    posToWord.Remove(poses[randomWordIndex]);
+    indexToWord.Remove(poses[randomWordIndex]);
   }
 
   private string[] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
@@ -221,13 +204,13 @@ public class Column : IRenderable
         column[i] = words[wordI];
         if (words[wordI] != rightWord)
         {
-          posToWord.Add(i, words[wordI]);
+          indexToWord.Add(i, words[wordI]);
         }
         wordI++;
       }
       else
       {
-        column[i] = "U";// U for undefined// = Constants.symbols[rnd.Next(Constants.symbols.Length)].ToString();
+        column[i] = "U";
       }
     }
     return column;
@@ -341,7 +324,7 @@ public class Column : IRenderable
           }
           spawnedHints += 1;
           res.Add(i, endingPos - i);
-          hintTypeData.Add(i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);
+          indexToHintType.Add(i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);
           hintNumber++;
         }
       }
@@ -376,6 +359,22 @@ public class Column : IRenderable
     return res;
   }
 
+  public string GetElement(int pos)
+  {
+    return columnByElements[posToElement[pos]];
+  }
+
+  public void SelectElement(int posOfCursor)
+  {
+    isColumnSelected = true;
+    selectorPos = posOfCursor;
+  }
+
+
+
+
+
+  //IRenderable interface implementation
   List<List<RenderData>> IRenderable.GetRenderData()
   {
     List<List<RenderData>> res = new List<List<RenderData>>();
@@ -387,10 +386,10 @@ public class Column : IRenderable
     {
       jump = 1;//TODO:use private function GetCharsOf();
       List<char> charsToRender = new List<char>();
-      if (hintPosData.ContainsKey(i) && posToElement[selectorPos] == i)
+      if (indexToHintPos.ContainsKey(i) && posToElement[selectorPos] == i)
       {
         jump = 0;
-        for (int j = 0; j <= hintPosData[i]; j++)
+        for (int j = 0; j <= indexToHintPos[i]; j++)
         {
           List<char> charr = columnByElements[i + j].ToCharArray().ToList();
           charsToRender = charsToRender.Concat(charr).ToList();
@@ -427,16 +426,7 @@ public class Column : IRenderable
     isColumnSelected = false;//expire "selection"
     return res;
   }
-  public string GetElement(int pos)
-  {
-    return columnByElements[posToElement[pos]];
-  }
 
-  public void SelectElement(int posOfCursor)
-  {
-    isColumnSelected = true;
-    selectorPos = posOfCursor;
-  }
   int IRenderable.x { get; set; }
   int IRenderable.y { get; set; }
 }

@@ -27,9 +27,6 @@ public class GameLogger : IRenderable
       Logs.Dequeue();
     }
   }
-
-
-
   //IRender interface implementation
 
   List<List<RenderData>> IRenderable.GetRenderData()
