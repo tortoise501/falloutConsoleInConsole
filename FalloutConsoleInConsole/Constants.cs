@@ -107,3 +107,9 @@ public enum HintType
   Dud,
   Attempt
 }
+public enum ElementType
+{
+  Symbol,
+  Word,
+  Hint
+}
