@@ -9,47 +9,11 @@ public class Attempts : IRenderable
   {
     this.maxAttempts = maxAttempts;
     attemptsLeft = maxAttempts;
-    this.x = x;
-    this.y = y;
+    ((IRenderable)this).x = x;
+    ((IRenderable)this).y = y;
   }
 
-  public int GetPositionX()
-  {
-    return x;
-    // throw new NotImplementedException();
-  }
 
-  public int GetPositionY()
-  {
-    return y;
-    // throw new NotImplementedException();
-  }
-
-  List<List<RenderData>> IRenderable.GetRenderData()
-  {
-    string textToRender = $"{attemptsLeft} Attempt(s) Left: ";
-    for (int i = 0; i < attemptsLeft; i++)
-    {
-      textToRender += "\u25A0 ";
-    }
-    return new List<List<RenderData>>() { textToRender.Select(x => new RenderData(x, CharacterState.notSelected)).ToList() };
-    // List<List<RenderData>> res = new List<List<RenderData>>();
-    // res.Add(new List<RenderData>());
-    // res[0].Add(new RenderData('[', CharacterState.notSelected));
-    // for (int i = 0; i < maxAttempts; i++)
-    // {
-    //   if (i < attemptsLeft)
-    //   {
-    //     res[0].Add(new RenderData('\u25A0', CharacterState.notSelected));
-    //   }
-    //   else
-    //   {
-    //     res[0].Add(new RenderData(' ', CharacterState.notSelected));
-    //   }
-    // }
-    // res[0].Add(new RenderData(']', CharacterState.notSelected));
-    // return res;
-  }
   public bool LooseAttemptAndCheckForLoose()
   {
     attemptsLeft--;
@@ -63,6 +27,20 @@ public class Attempts : IRenderable
   {
     attemptsLeft = maxAttempts;
   }
-  int x;
-  int y;
+
+
+  //IRender Interface implementation 
+
+  int IRenderable.x { get; set; }
+  int IRenderable.y { get; set; }
+
+  List<List<RenderData>> IRenderable.GetRenderData()
+  {
+    string textToRender = $"{attemptsLeft} Attempt(s) Left: ";
+    for (int i = 0; i < attemptsLeft; i++)
+    {
+      textToRender += "\u25A0 ";
+    }
+    return new List<List<RenderData>>() { textToRender.Select(x => new RenderData(x, CharacterState.notSelected)).ToList() };
+  }
 }

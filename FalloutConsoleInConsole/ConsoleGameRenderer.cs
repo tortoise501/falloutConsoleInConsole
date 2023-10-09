@@ -10,7 +10,7 @@ class ConsoleGameRenderer
   {
     for (int i = 0; i < objectsToRender.Count(); i++)
     {
-      InsertRenderData(objectsToRender[i], objectsToRender[i].GetPositionX(), objectsToRender[i].GetPositionY());//!19 is temporal for length of column
+      InsertRenderData(objectsToRender[i], objectsToRender[i].x, objectsToRender[i].y);//!19 is temporal for length of column
     }
   }
   public void InsertRenderData(IRenderable objectRenderI, int xOffset = 0, int yOffset = 0)

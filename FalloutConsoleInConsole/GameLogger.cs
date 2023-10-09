@@ -7,8 +7,8 @@ public class GameLogger : IRenderable
   public GameLogger(int maxLength, int x = 0, int y = 0)
   {
     this.maxLength = maxLength;
-    this.x = x;
-    this.y = y;
+    ((IRenderable)this).x = x;
+    ((IRenderable)this).y = y;
   }
   public void SetSelectedElement(string element)
   {
@@ -28,15 +28,9 @@ public class GameLogger : IRenderable
     }
   }
 
-  public int GetPositionX()
-  {
-    return x;
-  }
 
-  public int GetPositionY()
-  {
-    return y;
-  }
+
+  //IRender interface implementation
 
   List<List<RenderData>> IRenderable.GetRenderData()
   {
@@ -59,6 +53,6 @@ public class GameLogger : IRenderable
     res.Add(selectedElement.Select(x => new RenderData(x)).ToList());
     return res;
   }
-  int x = 0;
-  int y = 0;
+  int IRenderable.x { get; set; }
+  int IRenderable.y { get; set; }
 }

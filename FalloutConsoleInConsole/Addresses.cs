@@ -4,8 +4,8 @@ public class Addresses : IRenderable
   List<List<RenderData>> addressesColumnData = new List<List<RenderData>>();
   public Addresses(int height, int width, int x = 0, int y = 0)
   {
-    this.y = y;
-    this.x = x;
+    ((IRenderable)this).x = x;
+    ((IRenderable)this).y = y;
     addressesColumnData = GenerateAddressesColumn(height, width);
   }
 
@@ -27,20 +27,10 @@ public class Addresses : IRenderable
     return res;
   }
 
-  public int GetPositionX()
-  {
-    return x;
-  }
-
-  public int GetPositionY()
-  {
-    return y;
-  }
-
   List<List<RenderData>> IRenderable.GetRenderData()
   {
     return addressesColumnData;
   }
-  int x = 0;
-  int y = 0;
+  int IRenderable.x { get; set; }
+  int IRenderable.y { get; set; }
 }

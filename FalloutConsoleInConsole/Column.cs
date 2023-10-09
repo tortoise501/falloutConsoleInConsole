@@ -74,8 +74,8 @@ public class Column : IRenderable
 
   public Column(int width, int height, int wordLength, int wordAmount, string[] words, int y = 0, int x = 0, int hintAmount = 4, int resetAttemptsHintAmount = 0)
   {
-    this.x = x;
-    this.y = y;
+    ((IRenderable)this).x = x;
+    ((IRenderable)this).y = y;
 
     columnWidth = width;
     columnHeight = height;
@@ -437,18 +437,6 @@ public class Column : IRenderable
     isColumnSelected = true;
     selectorPos = posOfCursor;
   }
-
-  public int GetPositionX()
-  {
-    return x;
-    // throw new NotImplementedException();
-  }
-
-  public int GetPositionY()
-  {
-    return y;
-    // throw new NotImplementedException();
-  }
-  int x = 0;
-  int y = 0;
+  int IRenderable.x { get; set; }
+  int IRenderable.y { get; set; }
 }
