@@ -10,10 +10,7 @@ public class Column : IRenderable
 {
   static Random rnd = new Random();
 
-  /// <summary>
-  /// Array that store all elements   
-  /// </summary>
-  string[] columnByElements = new string[0];
+  Element[] columnByElements = new Element[0];
   readonly int columnWidth;
   readonly int columnHeight;
 
@@ -28,41 +25,14 @@ public class Column : IRenderable
       Column.rightWord = rightWord;
     }
   }
-
-  //*----------------------------------------------------------------------Data dictionaries
-  /// <summary>
-  /// Key = position(as in char array)
-  /// Value = index(as in element array)
-  /// </summary>
-  Dictionary<int, int> posToElement;
-
-  /// <summary>
-  /// Key = Index,
-  /// Value = length of hint
-  /// </summary>
-  Dictionary<int, int> indexToHintPos;
-  /// <summary>
-  /// Key = Index,
-  /// Value = Type of hint
-  /// </summary>
-  Dictionary<int, HintType> indexToHintType = new Dictionary<int, HintType>();
-
-  /// <summary>
-  /// Key = index
-  /// Value = Word on that place
-  /// </summary>
-  Dictionary<int, string> indexToWord = new Dictionary<int, string>();
+  // Dictionary<int, int> posToElement;
+  // Dictionary<int, int> indexToHintPos;
+  // Dictionary<int, HintType> indexToHintType = new Dictionary<int, HintType>();
+  // Dictionary<int, string> indexToWord = new Dictionary<int, string>();
 
   //!probably deprecated
-  int selectorPos = 0;  //selected position(as character index)
+  int selectorPos = 0;
   bool isColumnSelected = false;
-
-  //*----------------------------------------------------------------------LOG
-  // int logLength = 7;
-  // Queue<string> gameLogs = new Queue<string>();
-
-
-
   public Column(int width, int height, int wordLength, int wordAmount, string[] words, int y = 0, int x = 0, int hintAmount = 4, int resetAttemptsHintAmount = 0)
   {
     ((IRenderable)this).x = x;
@@ -70,14 +40,12 @@ public class Column : IRenderable
 
     columnWidth = width;
     columnHeight = height;
-    this.words = words; //GenerateRandomWords(this.wordAmount, this.wordLength);
-    // rightWord = words[rnd.Next(0, wordAmount - 1)];//!test
+    this.words = words;
     columnByElements = GenerateColumn(words, columnWidth, columnHeight, wordLength, wordAmount);
-    posToElement = MapPosToElements(columnByElements);
-    indexToHintPos = GenerateHintData(columnWidth, hintAmount, resetAttemptsHintAmount);
+    // MapPosToElements(columnByElements);
+    GenerateHintData(columnWidth, hintAmount, resetAttemptsHintAmount);
     PlaceRandomSymbols();
     //TODO: there is no sense in all those functions to return value, they can just modify global variables 
-    // string[] testToDelete = NewGenerateColumn(words, COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT);
   }
 
 
@@ -89,29 +57,35 @@ public class Column : IRenderable
   /// </summary>
   /// <param name="startingIndex">index of an element in columnByElements</param>
   /// <returns></returns>
-  public List<char> GetCharsOf(int startingIndex, int length)
+  public List<char> GetCharsOf(MasterElement el)
   {
-    List<char> charsToRender = new List<char>();
-    for (int j = 0; j <= length; j++)
-    {
-      List<char> charr = columnByElements[startingIndex + j].ToCharArray().ToList();
-      charsToRender = charsToRender.Concat(charr).ToList();
-    }
-    return charsToRender;
+    List<char> res = new List<char>();
+    res.Add(el.value);
+    res = res.Concat(((MasterElement)el).slaveElements.Select(x => x.value)).ToList();
+    return res;
   }
 
 
   public ExecutionCode CheckInput()
   {
-    int selectedIndex = posToElement[selectorPos];
-    string selectedItem = columnByElements[selectedIndex];
-    if (selectedItem == rightWord)//is this right word
+    // int selectedIndex = posToElement[selectorPos];
+    // string selectedItem = columnByElements[selectedIndex];
+    Element selectedElement = columnByElements[selectorPos];
+    if (selectedElement.elementType == ElementType.Word)//is this right word//selectedElement.GetType() == typeof(Word) && ((Word)selectedElement).word == rightWord
     {
-      return ExecutionCode.CorrectWord;
+      string word = selectedElement.GetType() == typeof(Word) ? ((Word)selectedElement).word : ((Symbol)selectedElement).belongsToWord.word;//.((Word)masterElement).word;
+      if (word == rightWord)//is it a wrong word
+      {
+        return ExecutionCode.CorrectWord;
+      }
+      else
+      {
+        return ExecutionCode.Mistake;
+      }
     }
-    if (indexToHintPos.ContainsKey(selectedIndex))//is this a hint
+    if (selectedElement.elementType == ElementType.Hint)//is this a hint
     {
-      if (indexToHintType[selectedIndex] == HintType.Dud)
+      if (((Hint)selectedElement).hintType == HintType.Dud)
       {
         return ExecutionCode.HintDuds;
       }
@@ -119,10 +93,6 @@ public class Column : IRenderable
       {
         return ExecutionCode.HintLife;
       }
-    }
-    if (selectedItem.Length > 1)//is it a wrong word
-    {
-      return ExecutionCode.Mistake;
     }
     else//then it is a symbol
     {
@@ -133,61 +103,69 @@ public class Column : IRenderable
 
   public string GenerateLog(ExecutionCode executionCode, int selectedPos)
   {
-    string el = columnByElements[posToElement[selectedPos]];
-    string res = "";
-    if (executionCode == ExecutionCode.Mistake)
-    {
-      if (rightWord == null)
-        throw new NullReferenceException();
-      res = $">{el}\n>Entry Denied\n>Likeness={CheckForLikeness(el, rightWord)}";
-    }
-    if (executionCode == ExecutionCode.CorrectWord)
-    {
-      res = $">{el}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
-    }
-    if (executionCode == ExecutionCode.HintDuds)
-    {
-      char[] hint = GetCharsOf(posToElement[selectedPos], indexToHintPos[posToElement[selectedPos]]).ToArray();
-      res = $">{string.Join("", hint)}\n>Dud removed";
-    }
-    if (executionCode == ExecutionCode.HintLife)
-    {
-      res = $"ATTEMPTS RESTORED";
-    }
-    if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
-    {
-      indexToHintPos.Remove(posToElement[selectedPos]);
-      indexToHintType.Remove(posToElement[selectedPos]);
-    }
-    return res;
+    return "Logs are temporary disabled";
+    // string el = columnByElements[posToElement[selectedPos]];
+    // string res = "";
+    // if (executionCode == ExecutionCode.Mistake)
+    // {
+    //   if (rightWord == null)
+    //     throw new NullReferenceException();
+    //   res = $">{el}\n>Entry Denied\n>Likeness={CheckForLikeness(el, rightWord)}";
+    // }
+    // if (executionCode == ExecutionCode.CorrectWord)
+    // {
+    //   res = $">{el}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
+    // }
+    // if (executionCode == ExecutionCode.HintDuds)
+    // {
+    //   char[] hint = GetCharsOf(posToElement[selectedPos], indexToHintPos[posToElement[selectedPos]]).ToArray();
+    //   res = $">{string.Join("", hint)}\n>Dud removed";
+    // }
+    // if (executionCode == ExecutionCode.HintLife)
+    // {
+    //   res = $"ATTEMPTS RESTORED";
+    // }
+    // if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
+    // {
+    //   indexToHintPos.Remove(posToElement[selectedPos]);
+    //   indexToHintType.Remove(posToElement[selectedPos]);
+    // }
+    // return res;
   }
   public void RemoveDud(int selectedPos)//!public temporarily for Game class dud removal
   {
-    if (indexToWord.Count == 0)
+    Word[] DudWords = columnByElements.OfType<Word>().Where(x => x.GetType() == typeof(Word) && x.word != rightWord).ToArray();
+    int randomIndex = rnd.Next(0, DudWords.Length);
+    foreach (Element element in DudWords[randomIndex].slaveElements)
     {
-      return;
+      columnByElements[element.index] = new Symbol('.', element.index);
     }
-    int randomWordIndex = rnd.Next(0, indexToWord.Count);
-    List<int> poses = Enumerable.ToList(indexToWord.Keys);
-    int posToReplace = poses[randomWordIndex];
-    string replacement = "";
-    for (int i = 0; i < columnByElements[posToReplace].Length; i++)
-    {
-      replacement += ".";
-    }
-    columnByElements[posToReplace] = replacement;
-    indexToWord.Remove(poses[randomWordIndex]);
+    columnByElements[DudWords[randomIndex].index] = new Symbol('.', DudWords[randomIndex].index);
+    // if (indexToWord.Count == 0)
+    // {
+    //   return;
+    // }
+    // int randomWordIndex = rnd.Next(0, indexToWord.Count);
+    // List<int> poses = Enumerable.ToList(indexToWord.Keys);
+    // int posToReplace = poses[randomWordIndex];
+    // string replacement = "";
+    // for (int i = 0; i < columnByElements[posToReplace].Length; i++)
+    // {
+    //   replacement += ".";
+    // }
+    // columnByElements[posToReplace] = replacement;
+    // indexToWord.Remove(poses[randomWordIndex]);
   }
 
-  private string[] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
+  private Element[] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
   {
-    int length = (height * width) - (wordAmount * wordLength) + wordAmount;
-    string[] column = new string[length];
+    int length = (height * width);// - (wordAmount * wordLength) + wordAmount;
+    Element[] column = new Element[length];
     int wordI = 0;
     HashSet<int> randomWordPos = new HashSet<int>();
     for (int i = 0; i < words.Length; i++)
     {
-      int pos = rnd.Next(length / wordAmount + length / wordAmount * i);
+      int pos = rnd.Next((length / wordAmount) * i, (length / wordAmount) * (i + 1) - wordLength + 1);
       if (randomWordPos.Contains(pos))
       {
         i--;
@@ -197,20 +175,25 @@ public class Column : IRenderable
     }
 
 
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < length;)
     {
       if (randomWordPos.Contains(i))
       {
-        column[i] = words[wordI];
-        if (words[wordI] != rightWord)
+        column[i] = new Word(words[wordI][0], i, words[wordI]);
+        Word masterElement = (Word)column[i];
+        i++;
+        for (int c = 1; c < words[wordI].Length; c++)
         {
-          indexToWord.Add(i, words[wordI]);
+          column[i] = new Symbol(words[wordI][c], i, masterElement);
+          masterElement.AddSlaveElement(column[i]);
+          i++;
         }
         wordI++;
       }
       else
       {
-        column[i] = "U";
+        column[i] = new Symbol('U', i);
+        i++;
       }
     }
     return column;
@@ -218,21 +201,21 @@ public class Column : IRenderable
 
 
 
-  private Dictionary<int, int> MapPosToElements(string[] elements)
-  {
-    Dictionary<int, int> res = new Dictionary<int, int>();
-    int i = 0;
-    for (int a = 0; a < elements.Length; a++)
-    {
-      string el = elements[a];
-      foreach (char c in el)
-      {
-        res.Add(i, a);
-        i++;
-      }
-    }
-    return res;
-  }
+  // private Dictionary<int, int> MapPosToElements(string[] elements)
+  // {
+  //   Dictionary<int, int> res = new Dictionary<int, int>();
+  //   int i = 0;
+  //   for (int a = 0; a < elements.Length; a++)
+  //   {
+  //     string el = elements[a];
+  //     foreach (char c in el)
+  //     {
+  //       res.Add(i, a);
+  //       i++;
+  //     }
+  //   }
+  //   return res;
+  // }
 
 
 
@@ -246,24 +229,15 @@ public class Column : IRenderable
   /// <param name="elements">array of elements</param>
   /// <param name="rowWidth">width of each column row</param>
   /// <returns></returns>
-  private Dictionary<int, int> GenerateHintData(int rowWidth, int hintAmount, int resetAttemptsHintAmount)
+  private void GenerateHintData(int rowWidth, int hintAmount, int resetAttemptsHintAmount)
   {
-    Dictionary<int, int> res = new Dictionary<int, int>();
-    int count = columnByElements.Count(x => x.Length > 1);
-
-    Stack<char> searchedChar = new Stack<char>();
-    Stack<int> searchedCharIndex = new Stack<int>();
-    HashSet<int> randomHintPos = new HashSet<int>();
     for (int i = 0; i < hintAmount; i++)//!Possible infinite loops
     {
-      int pos = rnd.Next(columnByElements.Length / hintAmount + columnByElements.Length / hintAmount * i);
-      if (columnByElements[pos].Length <= 1)
-      {
-        randomHintPos.Add(pos);//!Can generate hint on row borders
-        continue;
-      }
-      i--;
+      List<Element> posPullForRandomHints = columnByElements.Where(x => x.elementType == ElementType.Symbol && (x.index + 1) % rowWidth != 0).ToList();
+      int pos = rnd.Next(0, posPullForRandomHints.Count() / hintAmount + posPullForRandomHints.Count() / hintAmount * i);
+      posPullForRandomHints[pos].value = 'S';
     }
+
     HashSet<int> resetAttemptHintsOrder = new HashSet<int>();//witch hints reset attempt 
     for (int i = 0; i < resetAttemptsHintAmount; i++)//!Possible infinite loops
     {
@@ -277,67 +251,62 @@ public class Column : IRenderable
     }
     int hintNumber = 0;
 
-    foreach (int pos in randomHintPos)
-    {
-      columnByElements[pos] = "S";//Start of hint
-    }
     int spawnedHints = 0;
-    int widthSearched = 0;//how many chars were searched
     for (int i = 0; i < columnByElements.Length && spawnedHints < hintAmount; i++)
     {
-      string el = columnByElements[i];
-      widthSearched += el.Length;
-      if (el == "S" && 0 != (widthSearched % rowWidth))//is a start of a hint
+      Element el = columnByElements[i];
+      if (el.value != 'S')
       {
-        List<int> PossibleClosingPos = new List<int>();//? probably fixedTODO: Fix row restrictions
-        int checkedWidth = 0;//width checked in chars
-        for (int j = 1; rowWidth > (widthSearched % rowWidth) + checkedWidth; j++)
+        continue;
+      }
+      List<int> PossibleClosingPos = new List<int>();
+      for (int j = 1; rowWidth > ((i + 1) % rowWidth) + j; j++)
+      {
+        if (columnByElements[i + j].value != 'S' && columnByElements[i + j].elementType == ElementType.Symbol)
         {
-          if (columnByElements[i + j] != "S" && columnByElements[i + j].Length <= 1)
+          PossibleClosingPos.Add(i + j);
+          if (Constants.Parentheses.Count(x => x == columnByElements[i + j].value) > 0)
           {
-            PossibleClosingPos.Add(i + j);
-            if (Constants.Parentheses.Count(x => x.ToString() == columnByElements[i + j]) > 0)
-            {
-              break;
-            }
+            break;
           }
-          checkedWidth += columnByElements[i + j].Length;
         }
-        if (PossibleClosingPos.Count == 0)//If no possible hints, create new hint start later in list
+      }
+      if (PossibleClosingPos.Count == 0)//If no possible hints, create new hint start later in list
+      {
+        int NewPos = rnd.Next(i + 1, columnByElements.Length);
+        columnByElements[i].value = 'U';
+        columnByElements[NewPos].value = 'S';
+      }
+      else
+      {
+        int endingPos = PossibleClosingPos[rnd.Next(0, PossibleClosingPos.Count)];
+        if (columnByElements[endingPos].value == 'U')
         {
-          int NewPos = rnd.Next(i + 1, columnByElements.Length);
-          columnByElements[i] = "U";
-          columnByElements[NewPos] = "S";
+          char randomPar = Constants.Parentheses[rnd.Next(0, Constants.Parentheses.Length)];
+          columnByElements[i] = new Hint(Constants.GetOppositeParentheses[randomPar], i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);//.value = Constants.GetOppositeParentheses[randomPar];
+          for (int x = i + 1; x < endingPos; x++)
+          {
+            ((MasterElement)columnByElements[i]).AddSlaveElement(columnByElements[x]);
+          }
+          columnByElements[endingPos] = new Symbol(randomPar, endingPos);//.value = randomPar;
+          ((MasterElement)columnByElements[i]).AddSlaveElement(columnByElements[endingPos]);
         }
         else
         {
-          int endingPos = PossibleClosingPos[rnd.Next(0, PossibleClosingPos.Count)];
-          if (columnByElements[endingPos] == "U")
-          {
-            char randomPar = Constants.Parentheses[rnd.Next(0, Constants.Parentheses.Length)];
-            columnByElements[endingPos] = randomPar.ToString();
-            columnByElements[i] = Constants.GetOppositeParentheses[randomPar].ToString();
-          }
-          else
-          {
-            columnByElements[i] = Constants.GetOppositeParentheses[columnByElements[endingPos][0]].ToString();
-          }
-          spawnedHints += 1;
-          res.Add(i, endingPos - i);
-          indexToHintType.Add(i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);
-          hintNumber++;
+          columnByElements[i] = new Hint(Constants.GetOppositeParentheses[columnByElements[endingPos].value], i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);//.value = Constants.GetOppositeParentheses[columnByElements[endingPos].value];
         }
+        spawnedHints++;
+        hintNumber++;
       }
     }
-    return res;
   }
   private void PlaceRandomSymbols()
   {
     for (int i = 0; i < columnByElements.Length; i++)
     {
-      if (columnByElements[i] == "U" || columnByElements[i] == "S")
+      if (columnByElements[i].value == 'U' || columnByElements[i].value == 'S')
       {
-        columnByElements[i] = Constants.symbols[rnd.Next(0, Constants.symbols.Length)].ToString();
+        columnByElements[i].value = Constants.symbols[rnd.Next(0, Constants.symbols.Length)];
       }
     }
   }
@@ -359,9 +328,17 @@ public class Column : IRenderable
     return res;
   }
 
-  public string GetElement(int pos)
+  public string GetElementAsString(int pos)
   {
-    return columnByElements[posToElement[pos]];
+    string res = columnByElements[pos].value.ToString();
+    if (columnByElements[pos] is MasterElement)
+    {
+      foreach (Element el in ((MasterElement)columnByElements[pos]).slaveElements)
+      {
+        res += el.value;
+      }
+    }
+    return res;
   }
 
   public void SelectElement(int posOfCursor)
@@ -384,35 +361,39 @@ public class Column : IRenderable
     res.Add(new List<RenderData>());
     for (int i = 0; i < columnByElements.Length; i += jump)
     {
-      jump = 1;//TODO:use private function GetCharsOf();
-      List<char> charsToRender = new List<char>();
-      if (indexToHintPos.ContainsKey(i) && posToElement[selectorPos] == i)
+      // jump = 1;//TODO:use private function GetCharsOf();
+
+      List<Element> charsToRender = new List<Element>();// = new List<char>() { columnByElements[i].value };
+      if (columnByElements[i].elementType == ElementType.Symbol)
       {
-        jump = 0;
-        for (int j = 0; j <= indexToHintPos[i]; j++)
-        {
-          List<char> charr = columnByElements[i + j].ToCharArray().ToList();
-          charsToRender = charsToRender.Concat(charr).ToList();
-          jump++;
-        }
+        charsToRender.Add(columnByElements[i]);
       }
       else
       {
-        charsToRender = columnByElements[i].ToCharArray().ToList();
+        charsToRender.Add(columnByElements[i]);
+        charsToRender = charsToRender.Concat(((MasterElement)columnByElements[i]).slaveElements).ToList();
       }
-      foreach (char c in charsToRender)
+      jump = charsToRender.Count();
+      foreach (Element el in charsToRender)
       {
-        if (x + y * columnWidth == selectorPos && isColumnSelected)
+        if (el.index == selectorPos && isColumnSelected)
         {
-          res.Last().Add(new RenderData(c, CharacterState.selectedAsChar));
+          res.Last().Add(new RenderData(el.value, CharacterState.selectedAsChar));
         }
-        else if (i == posToElement[selectorPos] && isColumnSelected && c != '.')
+        else if
+        (
+          (
+            charsToRender[0].value == selectorPos
+            ||
+            charsToRender.Count(x => x.elementType == ElementType.Word) == charsToRender.Count()
+          ) && isColumnSelected && el.value != '.'
+        )
         {
-          res.Last().Add(new RenderData(c, CharacterState.selectedAsElement));
+          res.Last().Add(new RenderData(el.value, CharacterState.selectedAsElement));
         }
         else
         {
-          res.Last().Add(new RenderData(c, CharacterState.notSelected));
+          res.Last().Add(new RenderData(el.value, CharacterState.notSelected));
         }
         x++;
         if (x % columnWidth == 0)

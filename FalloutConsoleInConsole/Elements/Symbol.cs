@@ -1,9 +1,9 @@
 public class Symbol : Element
 {
-  public MasterElement masterElement { get; private set; }
-  public Symbol(char value, int index, int startPos, MasterElement masterElement) : base(value, index, startPos)
+  public Word? belongsToWord { get; private set; }
+  public Symbol(char value, int index, Word? masterElement = null) : base(value, index)
   {
-    this.masterElement = masterElement;
+    this.belongsToWord = masterElement;
     elementType = ElementType.Symbol;
   }
 }

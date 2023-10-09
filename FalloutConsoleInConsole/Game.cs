@@ -168,7 +168,7 @@ class Game
           break;
         }
     }
-    gameLogger.SetSelectedElement(columns[selectedColumn].GetElement(selectedPos));
+    gameLogger.SetSelectedElement(columns[selectedColumn].GetElementAsString(selectedPos));
   }
   public void ExecuteInput(ExecutionCode code, Column column)
   {
