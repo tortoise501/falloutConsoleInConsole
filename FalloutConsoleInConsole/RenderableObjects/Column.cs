@@ -135,6 +135,10 @@ public class Column : IRenderable
   public void RemoveDud(int selectedPos)//!public temporarily for Game class dud removal
   {
     Word[] DudWords = columnByElements.OfType<Word>().Where(x => x.GetType() == typeof(Word) && x.word != rightWord).ToArray();
+    if (DudWords.Length < 1)
+    {
+      return;
+    }
     int randomIndex = rnd.Next(0, DudWords.Length);
     foreach (Element element in DudWords[randomIndex].slaveElements)
     {
@@ -192,7 +196,7 @@ public class Column : IRenderable
       }
       else
       {
-        column[i] = new Symbol('U', i);
+        column[i] = new Symbol(' ', i);
         i++;
       }
     }
@@ -235,7 +239,7 @@ public class Column : IRenderable
     {
       List<Element> posPullForRandomHints = columnByElements.Where(x => x.elementType == ElementType.Symbol && (x.index + 1) % rowWidth != 0).ToList();
       int pos = rnd.Next(0, posPullForRandomHints.Count() / hintAmount + posPullForRandomHints.Count() / hintAmount * i);
-      posPullForRandomHints[pos].value = 'S';
+      posPullForRandomHints[pos].value = '\ufffd';
     }
 
     HashSet<int> resetAttemptHintsOrder = new HashSet<int>();//witch hints reset attempt 
@@ -255,14 +259,14 @@ public class Column : IRenderable
     for (int i = 0; i < columnByElements.Length && spawnedHints < hintAmount; i++)
     {
       Element el = columnByElements[i];
-      if (el.value != 'S')
+      if (el.value != '\ufffd')
       {
         continue;
       }
       List<int> PossibleClosingPos = new List<int>();
       for (int j = 1; rowWidth > ((i + 1) % rowWidth) + j; j++)
       {
-        if (columnByElements[i + j].value != 'S' && columnByElements[i + j].elementType == ElementType.Symbol)
+        if (columnByElements[i + j].value != '\ufffd' && columnByElements[i + j].elementType == ElementType.Symbol)
         {
           PossibleClosingPos.Add(i + j);
           if (Constants.Parentheses.Count(x => x == columnByElements[i + j].value) > 0)
@@ -274,13 +278,13 @@ public class Column : IRenderable
       if (PossibleClosingPos.Count == 0)//If no possible hints, create new hint start later in list
       {
         int NewPos = rnd.Next(i + 1, columnByElements.Length);
-        columnByElements[i].value = 'U';
-        columnByElements[NewPos].value = 'S';
+        columnByElements[i].value = ' ';
+        columnByElements[NewPos].value = '\ufffd';
       }
       else
       {
         int endingPos = PossibleClosingPos[rnd.Next(0, PossibleClosingPos.Count)];
-        if (columnByElements[endingPos].value == 'U')
+        if (columnByElements[endingPos].value == ' ')
         {
           char randomPar = Constants.Parentheses[rnd.Next(0, Constants.Parentheses.Length)];
           columnByElements[i] = new Hint(Constants.GetOppositeParentheses[randomPar], i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);//.value = Constants.GetOppositeParentheses[randomPar];
@@ -304,7 +308,7 @@ public class Column : IRenderable
   {
     for (int i = 0; i < columnByElements.Length; i++)
     {
-      if (columnByElements[i].value == 'U' || columnByElements[i].value == 'S')
+      if (columnByElements[i].value == ' ' || columnByElements[i].value == '\ufffd')
       {
         columnByElements[i].value = Constants.symbols[rnd.Next(0, Constants.symbols.Length)];
       }
@@ -383,10 +387,10 @@ public class Column : IRenderable
         else if
         (
           (
-            charsToRender[0].value == selectorPos
+            charsToRender[0].index == selectorPos
             ||
-            charsToRender.Count(x => x.elementType == ElementType.Word) == charsToRender.Count()
-          ) && isColumnSelected && el.value != '.'
+            (charsToRender.Count(x => x.elementType == ElementType.Word) == charsToRender.Count() && charsToRender.Count(x => x.index == selectorPos) > 0)
+          ) && isColumnSelected
         )
         {
           res.Last().Add(new RenderData(el.value, CharacterState.selectedAsElement));
