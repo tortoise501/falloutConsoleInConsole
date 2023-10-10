@@ -2,14 +2,15 @@ using System;
 using System.Linq;
 using System.Reflection.PortableExecutable;
 //test
-class Game
+public class Game
 {
 
   public GameState gameState { get; private set; } = GameState.InProgress;
 
   Random rnd = new Random();
-  readonly int COLUMN_WIDTH;
-  readonly int COLUMN_HEIGHT;
+  public readonly int COLUMN_WIDTH;
+  public readonly int COLUMN_HEIGHT;
+  public readonly int COLUMN_AMOUNT;
 
   readonly int WORD_AMOUNT;
   readonly int WORD_LENGTH;
@@ -19,28 +20,29 @@ class Game
 
   readonly int LOGGER_HEIGHT;
 
-
-  bool isStarted = false;
-  readonly int COLUMN_AMOUNT;
-
   readonly int HINT_AMOUNT;
   const int RESET_ATTEMPTS_HINT_AMOUNT = 1;//!DO not put in settings
 
 
+  bool isStarted = false;
+
+
+
   int xCursorPosition = 0;
   int yCursorPosition = 0;
-  int selectedColumn = 0;
-  int selectedPos { get => xCursorPosition + yCursorPosition * COLUMN_WIDTH; }
 
   readonly int MAX_ATTEMPTS;
-  Attempts attempts;// = new Attempts(MAX_ATTEMPTS);
+  public Attempts attempts { get; private set; }// = new Attempts(MAX_ATTEMPTS);
 
   GameLogger gameLogger;// = new GameLogger(COLUMN_HEIGHT);
 
   ConsoleGameRenderer renderer = new ConsoleGameRenderer();
-  Column[] columns;// = new Column[COLUMN_AMOUNT];
+  public Column[] columns { get; private set; }// = new Column[COLUMN_AMOUNT];
   List<string> words = new List<string>();
   List<string>[] wordsByColumns;// = new List<string>[COLUMN_AMOUNT];
+
+
+  InputHandler inputHandler;
 
 
   public Game(Settings settings, bool update = false, bool start = true)
@@ -73,7 +75,7 @@ class Game
 
 
     words = GenerateRandomWords(WORD_AMOUNT, WORD_LENGTH).ToList();
-    Column.SetRightWord(words[rnd.Next(0, words.Count())]);
+    inputHandler = new InputHandler(words[rnd.Next(0, words.Count())], this);
     wordsByColumns = new List<string>[COLUMN_AMOUNT];
     for (int i = 0; i < wordsByColumns.Length; i++)
     {
@@ -116,6 +118,7 @@ class Game
     }
     while (true)
     {
+      columns[InputHandler.selectedColumn].PlaceCursorForFrame(InputHandler.selectedPos);
       renderer.UpdateColumnRenderData();
       renderer.FastRender();
       if (gameState != GameState.InProgress)
@@ -123,95 +126,15 @@ class Game
         break;
       }
       HandleInput();
-      columns[selectedColumn].SelectElement(selectedPos);
     }
     return true;
   }
   void HandleInput()
   {
-    ConsoleKey key = Console.ReadKey().Key;
-    switch (key)
-    {
-      case ConsoleKey.LeftArrow:
-        {
-          xCursorPosition--;
-          if (xCursorPosition < 0)
-          {
-            xCursorPosition = COLUMN_WIDTH - 1;
-            selectedColumn = Math.Max(0, selectedColumn - 1);
-          }
-          break;
-        }
-      case ConsoleKey.RightArrow:
-        {
-          xCursorPosition++;
-          if (xCursorPosition > COLUMN_WIDTH - 1)
-          {
-            xCursorPosition = 0;
-            selectedColumn = Math.Min(COLUMN_AMOUNT - 1, selectedColumn + 1);
-          }
-          break;
-        }
-      case ConsoleKey.UpArrow:
-        {
-          yCursorPosition = Math.Max(0, yCursorPosition - 1);
-          break;
-        }
-      case ConsoleKey.DownArrow:
-        {
-          yCursorPosition = Math.Min(COLUMN_HEIGHT - 1, yCursorPosition + 1);
-          break;
-        }
-      case ConsoleKey.Enter:
-        {
-          ExecuteInput(columns[selectedColumn].CheckInput(), columns[selectedColumn]);
-          break;
-        }
-    }
-    gameLogger.SetSelectedElement(columns[selectedColumn].GetElementAsString(selectedPos));
-  }
-  public void ExecuteInput(ExecutionCode code, Column column)
-  {
-    string log = column.GenerateLog(code, selectedPos);
-    if (log.Length > 1)
-    {
-      gameLogger.AddGameLogs(log);
-    }
-    switch (code)
-    {
-      case ExecutionCode.Mistake:
-        {
-          LooseAttempt();
-          break;
-        }
-      case ExecutionCode.CorrectWord:
-        {
-          gameState = GameState.Won;
-          break;
-        }
-      case ExecutionCode.HintDuds:
-        {
-          int rndCol = rnd.Next(0, columns.Length);
-          while (columns[rndCol].words.Count(x => x[0] != '.') < 0)
-          {
-            rndCol = rnd.Next(0, columns.Length);
-          }
-          columns[rndCol].RemoveDud(selectedPos);
-          break;
-        }
-      case ExecutionCode.HintLife:
-        {
-          ResetAttempt();
-          break;
-        }
-      case ExecutionCode.WrongInput:
-        {
-          return;
-        }
-    }
+    inputHandler.HandleInput();
   }
 
-  private void LooseAttempt()
+  public void LooseAttempt()
   {
     bool isLost = attempts.LooseAttemptAndCheckForLoose();
     if (isLost)
@@ -219,15 +142,26 @@ class Game
       LooseGame();
     }
   }
+  public void WinGame()
+  {
+    gameState = GameState.Won;
+  }
   private void LooseGame()
   {
     gameState = GameState.Lost;
   }
-  private void ResetAttempt()
+  public void ResetAttempt()
   {
     attempts.ResetAttempts();
   }
-
+  public void AddLog(string log)//needed as interface for inputHandler
+  {
+    if (log == "")
+    {
+      return;
+    }
+    gameLogger.AddGameLogs(log);
+  }
   private string[] GenerateRandomWords(int amount = 6, int length = 6)
   {
     HashSet<string> res = new HashSet<string>();

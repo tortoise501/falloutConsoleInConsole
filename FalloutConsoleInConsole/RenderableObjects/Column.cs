@@ -17,14 +17,6 @@ public class Column : IRenderable
 
 
   public string[] words { get; private set; } = new string[0];//!is public temporarily for dud validation in Game class 
-  private static string? rightWord;
-  static public void SetRightWord(string rightWord)
-  {
-    if (rightWord != null)
-    {
-      Column.rightWord = rightWord;
-    }
-  }
   // Dictionary<int, int> posToElement;
   // Dictionary<int, int> indexToHintPos;
   // Dictionary<int, HintType> indexToHintType = new Dictionary<int, HintType>();
@@ -66,75 +58,90 @@ public class Column : IRenderable
   }
 
 
-  public ExecutionCode CheckInput()
+  // public ExecutionCode CheckInput()
+  // {
+  //   // int selectedIndex = posToElement[selectorPos];
+  //   // string selectedItem = columnByElements[selectedIndex];
+  //   Element selectedElement = columnByElements[selectorPos];
+  //   if (selectedElement.elementType == ElementType.Word)//is this right word//selectedElement.GetType() == typeof(Word) && ((Word)selectedElement).word == rightWord
+  //   {
+  //     string word = selectedElement.GetType() == typeof(Word) ? ((Word)selectedElement).word : ((Symbol)selectedElement).belongsToWord.word;//.((Word)masterElement).word;
+  //     if (word == rightWord)//is it a wrong word
+  //     {
+  //       return ExecutionCode.CorrectWord;
+  //     }
+  //     else
+  //     {
+  //       return ExecutionCode.Mistake;
+  //     }
+  //   }
+  //   if (selectedElement.elementType == ElementType.Hint)//is this a hint
+  //   {
+  //     if (((Hint)selectedElement).hintType == HintType.Dud)
+  //     {
+  //       return ExecutionCode.HintDuds;
+  //     }
+  //     else
+  //     {
+  //       return ExecutionCode.HintLife;
+  //     }
+  //   }
+  //   else//then it is a symbol
+  //   {
+  //     return ExecutionCode.WrongInput;
+  //   }
+  // }
+
+
+  // public string GenerateLog(ExecutionCode executionCode, int selectedPos)
+  // {
+  //   return "Logs are temporary disabled";
+  //   // string el = columnByElements[posToElement[selectedPos]];
+  //   // string res = "";
+  //   // if (executionCode == ExecutionCode.Mistake)
+  //   // {
+  //   //   if (rightWord == null)
+  //   //     throw new NullReferenceException();
+  //   //   res = $">{el}\n>Entry Denied\n>Likeness={CheckForLikeness(el, rightWord)}";
+  //   // }
+  //   // if (executionCode == ExecutionCode.CorrectWord)
+  //   // {
+  //   //   res = $">{el}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
+  //   // }
+  //   // if (executionCode == ExecutionCode.HintDuds)
+  //   // {
+  //   //   char[] hint = GetCharsOf(posToElement[selectedPos], indexToHintPos[posToElement[selectedPos]]).ToArray();
+  //   //   res = $">{string.Join("", hint)}\n>Dud removed";
+  //   // }
+  //   // if (executionCode == ExecutionCode.HintLife)
+  //   // {
+  //   //   res = $"ATTEMPTS RESTORED";
+  //   // }
+  //   // if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
+  //   // {
+  //   //   indexToHintPos.Remove(posToElement[selectedPos]);
+  //   //   indexToHintType.Remove(posToElement[selectedPos]);
+  //   // }
+  //   // return res;
+  // }
+
+
+  public void RemoveHint(int index)
   {
-    // int selectedIndex = posToElement[selectorPos];
-    // string selectedItem = columnByElements[selectedIndex];
-    Element selectedElement = columnByElements[selectorPos];
-    if (selectedElement.elementType == ElementType.Word)//is this right word//selectedElement.GetType() == typeof(Word) && ((Word)selectedElement).word == rightWord
+    if (columnByElements[index] is Hint)
     {
-      string word = selectedElement.GetType() == typeof(Word) ? ((Word)selectedElement).word : ((Symbol)selectedElement).belongsToWord.word;//.((Word)masterElement).word;
-      if (word == rightWord)//is it a wrong word
-      {
-        return ExecutionCode.CorrectWord;
-      }
-      else
-      {
-        return ExecutionCode.Mistake;
-      }
+
+      columnByElements[index] = new Symbol(columnByElements[index].value, index);
+      return;
     }
-    if (selectedElement.elementType == ElementType.Hint)//is this a hint
-    {
-      if (((Hint)selectedElement).hintType == HintType.Dud)
-      {
-        return ExecutionCode.HintDuds;
-      }
-      else
-      {
-        return ExecutionCode.HintLife;
-      }
-    }
-    else//then it is a symbol
-    {
-      return ExecutionCode.WrongInput;
-    }
+    throw new Exception("Tried to remove an element that is not a hint with RemoveHint() function");
   }
 
 
-  public string GenerateLog(ExecutionCode executionCode, int selectedPos)
+
+  public void RemoveDud(int selectedPos, string exclusion)//!public temporarily for Game class dud removal
   {
-    return "Logs are temporary disabled";
-    // string el = columnByElements[posToElement[selectedPos]];
-    // string res = "";
-    // if (executionCode == ExecutionCode.Mistake)
-    // {
-    //   if (rightWord == null)
-    //     throw new NullReferenceException();
-    //   res = $">{el}\n>Entry Denied\n>Likeness={CheckForLikeness(el, rightWord)}";
-    // }
-    // if (executionCode == ExecutionCode.CorrectWord)
-    // {
-    //   res = $">{el}\n>Exact match\n>Please Wait\n>while system\n>is accepted";
-    // }
-    // if (executionCode == ExecutionCode.HintDuds)
-    // {
-    //   char[] hint = GetCharsOf(posToElement[selectedPos], indexToHintPos[posToElement[selectedPos]]).ToArray();
-    //   res = $">{string.Join("", hint)}\n>Dud removed";
-    // }
-    // if (executionCode == ExecutionCode.HintLife)
-    // {
-    //   res = $"ATTEMPTS RESTORED";
-    // }
-    // if (executionCode == ExecutionCode.HintLife || executionCode == ExecutionCode.HintDuds)
-    // {
-    //   indexToHintPos.Remove(posToElement[selectedPos]);
-    //   indexToHintType.Remove(posToElement[selectedPos]);
-    // }
-    // return res;
-  }
-  public void RemoveDud(int selectedPos)//!public temporarily for Game class dud removal
-  {
-    Word[] DudWords = columnByElements.OfType<Word>().Where(x => x.GetType() == typeof(Word) && x.word != rightWord).ToArray();
+    Word[] DudWords = columnByElements.OfType<Word>().Where(x => x.GetType() == typeof(Word) && x.word != exclusion).ToArray();
     if (DudWords.Length < 1)
     {
       return;
@@ -145,25 +152,11 @@ public class Column : IRenderable
       columnByElements[element.index] = new Symbol('.', element.index);
     }
     columnByElements[DudWords[randomIndex].index] = new Symbol('.', DudWords[randomIndex].index);
-    // if (indexToWord.Count == 0)
-    // {
-    //   return;
-    // }
-    // int randomWordIndex = rnd.Next(0, indexToWord.Count);
-    // List<int> poses = Enumerable.ToList(indexToWord.Keys);
-    // int posToReplace = poses[randomWordIndex];
-    // string replacement = "";
-    // for (int i = 0; i < columnByElements[posToReplace].Length; i++)
-    // {
-    //   replacement += ".";
-    // }
-    // columnByElements[posToReplace] = replacement;
-    // indexToWord.Remove(poses[randomWordIndex]);
   }
 
   private Element[] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
   {
-    int length = (height * width);// - (wordAmount * wordLength) + wordAmount;
+    int length = (height * width);
     Element[] column = new Element[length];
     int wordI = 0;
     HashSet<int> randomWordPos = new HashSet<int>();
@@ -205,34 +198,6 @@ public class Column : IRenderable
 
 
 
-  // private Dictionary<int, int> MapPosToElements(string[] elements)
-  // {
-  //   Dictionary<int, int> res = new Dictionary<int, int>();
-  //   int i = 0;
-  //   for (int a = 0; a < elements.Length; a++)
-  //   {
-  //     string el = elements[a];
-  //     foreach (char c in el)
-  //     {
-  //       res.Add(i, a);
-  //       i++;
-  //     }
-  //   }
-  //   return res;
-  // }
-
-
-
-
-
-
-
-  /// <summary>
-  ///   returns dictionary where key is start of a hint represented as an index in an element array and value is a length of that hint 
-  /// </summary>
-  /// <param name="elements">array of elements</param>
-  /// <param name="rowWidth">width of each column row</param>
-  /// <returns></returns>
   private void GenerateHintData(int rowWidth, int hintAmount, int resetAttemptsHintAmount)
   {
     for (int i = 0; i < hintAmount; i++)//!Possible infinite loops
@@ -287,7 +252,7 @@ public class Column : IRenderable
         if (columnByElements[endingPos].value == ' ')
         {
           char randomPar = Constants.Parentheses[rnd.Next(0, Constants.Parentheses.Length)];
-          columnByElements[i] = new Hint(Constants.GetOppositeParentheses[randomPar], i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);//.value = Constants.GetOppositeParentheses[randomPar];
+          columnByElements[i] = new Hint(Constants.GetOppositeParentheses[randomPar], i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);
           for (int x = i + 1; x < endingPos; x++)
           {
             ((MasterElement)columnByElements[i]).AddSlaveElement(columnByElements[x]);
@@ -297,7 +262,7 @@ public class Column : IRenderable
         }
         else
         {
-          columnByElements[i] = new Hint(Constants.GetOppositeParentheses[columnByElements[endingPos].value], i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);//.value = Constants.GetOppositeParentheses[columnByElements[endingPos].value];
+          columnByElements[i] = new Hint(Constants.GetOppositeParentheses[columnByElements[endingPos].value], i, resetAttemptHintsOrder.Contains(hintNumber) ? HintType.Attempt : HintType.Dud);
         }
         spawnedHints++;
         hintNumber++;
@@ -315,44 +280,30 @@ public class Column : IRenderable
     }
   }
 
-  private int CheckForLikeness(string input, string compareTo)
+
+
+
+  public Element GetElement(int pos)
   {
-    if (input.Length != compareTo.Length)
+    Element element = columnByElements[pos];
+    if (element.elementType == ElementType.Word && element is Symbol)
     {
-      throw new Exception("Stupid chat gpt exception");
+      return ((Symbol)element).belongsToWord;
     }
-    int res = 0;
-    for (int i = 0; i < input.Length; i++)
-    {
-      if (input[i] == compareTo[i])
-      {
-        res++;
-      }
-    }
-    return res;
+    return element;
   }
-
-  public string GetElementAsString(int pos)
-  {
-    string res = columnByElements[pos].value.ToString();
-    if (columnByElements[pos] is MasterElement)
-    {
-      foreach (Element el in ((MasterElement)columnByElements[pos]).slaveElements)
-      {
-        res += el.value;
-      }
-    }
-    return res;
-  }
-
-  public void SelectElement(int posOfCursor)
-  {
-    isColumnSelected = true;
-    selectorPos = posOfCursor;
-  }
-
-
-
+  // public string GetElementAsString(int pos)
+  // {
+  //   string res = columnByElements[pos].value.ToString();
+  //   if (columnByElements[pos] is MasterElement)
+  //   {
+  //     foreach (Element el in ((MasterElement)columnByElements[pos]).slaveElements)
+  //     {
+  //       res += el.value;
+  //     }
+  //   }
+  //   return res;
+  // }
 
 
   //IRenderable interface implementation
@@ -367,7 +318,7 @@ public class Column : IRenderable
     {
       // jump = 1;//TODO:use private function GetCharsOf();
 
-      List<Element> charsToRender = new List<Element>();// = new List<char>() { columnByElements[i].value };
+      List<Element> charsToRender = new List<Element>();
       if (columnByElements[i].elementType == ElementType.Symbol)
       {
         charsToRender.Add(columnByElements[i]);
@@ -410,6 +361,11 @@ public class Column : IRenderable
     }
     isColumnSelected = false;//expire "selection"
     return res;
+  }
+  public void PlaceCursorForFrame(int pos)
+  {
+    selectorPos = pos;
+    isColumnSelected = true;
   }
 
   int IRenderable.x { get; set; }

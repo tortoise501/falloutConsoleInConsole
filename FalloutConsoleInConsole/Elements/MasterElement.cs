@@ -17,4 +17,10 @@ public class MasterElement : Element
     element.elementType = elementType == ElementType.Word ? ElementType.Word : element.elementType;
     length++;
   }
+  public override string ToString()
+  {
+    string slavesString = "";
+    slaveElements.ForEach(x => slavesString += x);
+    return value.ToString() + slavesString;
+  }
 }

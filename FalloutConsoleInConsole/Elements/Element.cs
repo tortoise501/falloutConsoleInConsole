@@ -8,4 +8,8 @@ public abstract class Element
     this.value = value;
     this.index = index;
   }
+  public override string ToString()
+  {
+    return value.ToString();
+  }
 }
