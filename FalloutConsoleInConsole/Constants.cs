@@ -28,7 +28,7 @@ static class Constants
     // CharStateToCharColor[CharacterState.selectedAsElement] = settings.selectedAsElementChar;
     // CharStateToCharColor[CharacterState.selectedAsChar] = settings.selectedAsCharChar;
     StateToBrush[CharacterState.notSelected] = new Brush(settings.notSelectedBackground, settings.notSelectedChar);//TODO: better settings integration
-    StateToBrush[CharacterState.selectedAsElement] = new Brush(settings.selectedAsElementBackground, settings.selectedAsElementBackground);
+    StateToBrush[CharacterState.selectedAsElement] = new Brush(settings.selectedAsElementBackground, settings.selectedAsElementChar);
     StateToBrush[CharacterState.selectedAsChar] = new Brush(settings.selectedAsCharBackground, settings.selectedAsCharChar);
   }
 

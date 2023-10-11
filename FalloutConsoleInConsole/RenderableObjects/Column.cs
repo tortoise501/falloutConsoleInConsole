@@ -159,7 +159,7 @@ public class Column : IRenderable
     for (int i = 0; i < words.Length; i++)
     {
       int rndY = rnd.Next(height / wordAmount * i, height / wordAmount * (i + 1));
-      int rndX = rnd.Next(rndY == height / wordAmount * (i + 1) ? width - 1 - wordLength : width);
+      int rndX = rnd.Next(rndY == height / wordAmount * (i + 1) - 1 ? width - 1 - wordLength : width);
       Coordinates pos = new Coordinates(rndX, rndY);// rnd.Next((length / wordAmount) * i, (length / wordAmount) * (i + 1) - wordLength + 1);
       if (randomWordPos.Contains(pos))
       {
@@ -336,9 +336,13 @@ public class Column : IRenderable
       {
         // Coordinates coords = new Coordinates(x, y);
         Element element = columnByElements[x, y];
-        if (element is Word && (element as Word).slaveElements.Count(el => el.coordinates == cursorPos) > 0 && isColumnSelected)
+        if (element is Word && ((element as Word).slaveElements.Count(el => el.coordinates == cursorPos) > 0 || element.coordinates == cursorPos) && isColumnSelected)
         {
           saveBrushCount = (element as Word).word.Length;
+        }
+        if (element is Hint && element.coordinates == cursorPos && isColumnSelected)
+        {
+          saveBrushCount = (element as Hint).slaveElements.Count();
         }
         if (element.coordinates == cursorPos && isColumnSelected)
         {
@@ -348,7 +352,7 @@ public class Column : IRenderable
             saveBrushCount--;
           }
         }
-        else if (saveBrushCount > 0)
+        else if (saveBrushCount > 0 && isColumnSelected)
         {
           res.Last().Add(new RenderData(element.value, CharacterState.selectedAsElement));
           saveBrushCount--;
@@ -359,50 +363,6 @@ public class Column : IRenderable
         }
       }
     }
-    // for (int i = 0; i < columnByElements.Length; i += jump)
-    // {
-
-    //   List<Element> charsToRender = new List<Element>();
-    //   if (columnByElements[i].elementType == ElementType.Symbol)
-    //   {
-    //     charsToRender.Add(columnByElements[i]);
-    //   }
-    //   else
-    //   {
-    //     charsToRender.Add(columnByElements[i]);
-    //     charsToRender = charsToRender.Concat(((MasterElement)columnByElements[i]).slaveElements).ToList();
-    //   }
-    //   jump = charsToRender.Count();
-    //   foreach (Element el in charsToRender)
-    //   {
-    //     if (el.index == selectorPos && isColumnSelected)
-    //     {
-    //       res.Last().Add(new RenderData(el.value, CharacterState.selectedAsChar));
-    //     }
-    //     else if
-    //     (
-    //       (
-    //         charsToRender[0].index == selectorPos
-    //         ||
-    //         (charsToRender.Count(x => x.elementType == ElementType.Word) == charsToRender.Count() && charsToRender.Count(x => x.index == selectorPos) > 0)
-    //       ) && isColumnSelected
-    //     )
-    //     {
-    //       res.Last().Add(new RenderData(el.value, CharacterState.selectedAsElement));
-    //     }
-    //     else
-    //     {
-    //       res.Last().Add(new RenderData(el.value, CharacterState.notSelected));
-    //     }
-    //     x++;
-    //     if (x % columnWidth == 0)
-    //     {
-    //       y++;
-    //       x = 0;
-    //       res.Add(new List<RenderData>());
-    //     }
-    //   }
-    // }
     isColumnSelected = false;//expire "selection"
     return res;
   }
