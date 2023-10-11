@@ -9,7 +9,7 @@ public class InputHandler
   }
   public ExecutionCode GetExecutionCodeForElement(Element element)
   {
-    if (element is Word)//requires element to be master word element
+    if (element is Word)
     {
       if (rightWord == ((Word)element).word)
       {
@@ -43,6 +43,8 @@ public class InputHandler
   public void HandleInput()
   {
     ConsoleKey key = Console.ReadKey().Key;
+
+    Element element = game.columns[selectedColumn].GetElement(selectedPos);
     switch (key)
     {
       case ConsoleKey.LeftArrow:
@@ -77,11 +79,8 @@ public class InputHandler
         }
       case ConsoleKey.Enter:
         {
-          Element element = game.columns[selectedColumn].GetElement(selectedPos);
           string log = ExecuteCodeAndReturnLogs(GetExecutionCodeForElement(element), element, game.columns[selectedColumn]);
           game.AddLog(log);
-          //TODO:ExecuteInput(columns[selectedColumn].CheckInput(), columns[selectedColumn]);
-          //TODO:gameLogger.SetSelectedElement(columns[selectedColumn].GetElementAsString(selectedPos));
           break;
         }
     }
@@ -95,26 +94,26 @@ public class InputHandler
         {
           column.RemoveHint(element.index);
           game.ResetAttempt();
-          log = $"ATTEMPTS RESTORED";
+          log = $"Tries Reset.";
           break;
         }
       case ExecutionCode.HintDuds:
         {
           column.RemoveHint(element.index);
           column.RemoveDud(selectedPos, rightWord);
-          log = $">{element}\n>Dud removed";
+          log = $">{element}\n>Dud Removed.";
           break;
         }
       case ExecutionCode.Mistake:
         {
           game.LooseAttempt();
-          log = $">{element}\n>Entry Denied\n>Likeness={CheckForLikeness(element.ToString())}";
+          log = $">{element}\n>Entry denied.\n>Likeness={CheckForLikeness(element.ToString())}";
           break;
         }
       case ExecutionCode.CorrectWord:
         {
           game.WinGame();
-          log = $">{element}\n>Exact match\n>Please Wait\n>while system\n>is accepted"; ;
+          log = $">{element}\n>Password Accepted.";
           break;
         }
       case ExecutionCode.WrongInput:

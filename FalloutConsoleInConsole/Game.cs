@@ -21,7 +21,7 @@ public class Game
   readonly int LOGGER_HEIGHT;
 
   readonly int HINT_AMOUNT;
-  const int RESET_ATTEMPTS_HINT_AMOUNT = 1;//!DO not put in settings
+  const int RESET_ATTEMPTS_HINT_AMOUNT = 1;
 
 
   bool isStarted = false;
@@ -32,14 +32,14 @@ public class Game
   int yCursorPosition = 0;
 
   readonly int MAX_ATTEMPTS;
-  public Attempts attempts { get; private set; }// = new Attempts(MAX_ATTEMPTS);
+  public Attempts attempts { get; private set; }
 
-  GameLogger gameLogger;// = new GameLogger(COLUMN_HEIGHT);
+  GameLogger gameLogger;
 
   ConsoleGameRenderer renderer = new ConsoleGameRenderer();
-  public Column[] columns { get; private set; }// = new Column[COLUMN_AMOUNT];
+  public Column[] columns { get; private set; }
   List<string> words = new List<string>();
-  List<string>[] wordsByColumns;// = new List<string>[COLUMN_AMOUNT];
+  List<string>[] wordsByColumns;
 
 
   InputHandler inputHandler;
@@ -56,7 +56,7 @@ public class Game
     MAX_ATTEMPTS = settings.MaxAttempts;
     COLUMN_AMOUNT = settings.ColumnAmount;
     LOGGER_HEIGHT = settings.LoggerHeight;
-    HINT_AMOUNT = 8;//!add to settings
+    HINT_AMOUNT = settings.HintAmount;//!add to settings
 
     if (start)
     {
@@ -95,7 +95,6 @@ public class Game
     {
       addToRender.Add(new Addresses(ADDRESS_HEIGHT, ADDRESS_WIDTH, x, y));
       x += ADDRESS_WIDTH + spaceBetweenElements;
-      //!change hint amount
       columns[i] = new Column(COLUMN_WIDTH, COLUMN_HEIGHT, WORD_LENGTH, WORD_AMOUNT / COLUMN_AMOUNT, wordsByColumns[i].ToArray(), y, x, HINT_AMOUNT / COLUMN_AMOUNT, i == columnWithResetHint ? RESET_ATTEMPTS_HINT_AMOUNT : 0);
       addToRender.Add(columns[i]);
       x += COLUMN_WIDTH + spaceBetweenElements;

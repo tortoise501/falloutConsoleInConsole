@@ -12,12 +12,12 @@ public class GameLogger : IRenderable
   }
   public void SetSelectedElement(string element)
   {
-    selectedElement = element;
+    selectedElement = ">" + element;
   }
 
   public void AddGameLogs(string str)
   {
-    string[] logs = str.Split('\n');//.Reverse().ToArray();//!Change later in log generation
+    string[] logs = str.Split('\n');
     foreach (string log in logs)
     {
       Logs.Enqueue(log);

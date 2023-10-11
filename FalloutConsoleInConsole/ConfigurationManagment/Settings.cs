@@ -1,5 +1,16 @@
 public class Settings
 {
+  public Settings()
+  {
+    if (HintAmount % ColumnAmount != 0)
+    {
+      HintAmount = (HintAmount / ColumnAmount) * ColumnAmount;
+    }
+    if (WordAmount % ColumnAmount != 0)
+    {
+      WordAmount = (WordAmount / ColumnAmount) * ColumnAmount;
+    }
+  }
   public int ColumnWidth = 12;
   public int ColumnHeight = 16;
 
@@ -14,6 +25,7 @@ public class Settings
   public int MaxAttempts = 4;
 
   public int ColumnAmount = 2;
+  public int HintAmount = 8;
 
   public ConsoleColor notSelectedBackground = ConsoleColor.Black;
   public ConsoleColor notSelectedChar = ConsoleColor.Green;
