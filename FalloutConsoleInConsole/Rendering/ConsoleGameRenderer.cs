@@ -46,8 +46,8 @@ class ConsoleGameRenderer
           continue;
         }
         RenderData character = renderData[y, x];
-        Console.BackgroundColor = Constants.CharStateToBackgroundColor[character.state];
-        Console.ForegroundColor = Constants.CharStateToBackgroundColor[character.state];
+        Console.BackgroundColor = Constants.StateToBrush[character.state].BackgroundBrushColor;
+        Console.ForegroundColor = Constants.StateToBrush[character.state].BrushColor;
         Console.Write(character.character);
       }
       Console.WriteLine();
@@ -75,13 +75,13 @@ class ConsoleGameRenderer
 
           if (sb.Capacity != 0)
           {
-            Console.BackgroundColor = Constants.CharStateToBackgroundColor[CharacterState.notSelected];
-            Console.ForegroundColor = Constants.CharStateToCharColor[CharacterState.notSelected];
+            Console.BackgroundColor = Constants.StateToBrush[CharacterState.notSelected].BackgroundBrushColor;
+            Console.ForegroundColor = Constants.StateToBrush[CharacterState.notSelected].BrushColor;
             Console.Write(sb);
             sb.Clear();
           }
-          Console.BackgroundColor = Constants.CharStateToBackgroundColor[character.state];
-          Console.ForegroundColor = Constants.CharStateToCharColor[character.state];
+          Console.BackgroundColor = Constants.StateToBrush[character.state].BackgroundBrushColor;
+          Console.ForegroundColor = Constants.StateToBrush[character.state].BrushColor;
           Console.Write(character.character);
         }
         else
@@ -92,8 +92,8 @@ class ConsoleGameRenderer
       }
       if (sb.Length != 0)
       {
-        Console.BackgroundColor = Constants.CharStateToBackgroundColor[CharacterState.notSelected];
-        Console.ForegroundColor = Constants.CharStateToCharColor[CharacterState.notSelected];
+        Console.BackgroundColor = Constants.StateToBrush[CharacterState.notSelected].BackgroundBrushColor;
+        Console.ForegroundColor = Constants.StateToBrush[CharacterState.notSelected].BrushColor;
         Console.Write(sb);
       }
       Console.WriteLine();

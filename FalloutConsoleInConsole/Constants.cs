@@ -20,13 +20,16 @@ static class Constants
   }
   static private void UpdateColors()
   {
-    CharStateToBackgroundColor[CharacterState.notSelected] = settings.notSelectedBackground;
-    CharStateToBackgroundColor[CharacterState.selectedAsElement] = settings.selectedAsElementBackground;
-    CharStateToBackgroundColor[CharacterState.selectedAsChar] = settings.selectedAsCharBackground;
+    // CharStateToBackgroundColor[CharacterState.notSelected] = settings.notSelectedBackground;
+    // CharStateToBackgroundColor[CharacterState.selectedAsElement] = settings.selectedAsElementBackground;
+    // CharStateToBackgroundColor[CharacterState.selectedAsChar] = settings.selectedAsCharBackground;
 
-    CharStateToCharColor[CharacterState.notSelected] = settings.notSelectedChar;
-    CharStateToCharColor[CharacterState.selectedAsElement] = settings.selectedAsElementChar;
-    CharStateToCharColor[CharacterState.selectedAsChar] = settings.selectedAsCharChar;
+    // CharStateToCharColor[CharacterState.notSelected] = settings.notSelectedChar;
+    // CharStateToCharColor[CharacterState.selectedAsElement] = settings.selectedAsElementChar;
+    // CharStateToCharColor[CharacterState.selectedAsChar] = settings.selectedAsCharChar;
+    StateToBrush[CharacterState.notSelected] = new Brush(settings.notSelectedBackground, settings.notSelectedChar);//TODO: better settings integration
+    StateToBrush[CharacterState.selectedAsElement] = new Brush(settings.selectedAsElementBackground, settings.selectedAsElementBackground);
+    StateToBrush[CharacterState.selectedAsChar] = new Brush(settings.selectedAsCharBackground, settings.selectedAsCharChar);
   }
 
 
@@ -69,17 +72,23 @@ static class Constants
       return false;
   }
 
-  static public Dictionary<CharacterState, ConsoleColor> CharStateToCharColor = new Dictionary<CharacterState, ConsoleColor>()
+  // static public Dictionary<CharacterState, ConsoleColor> CharStateToCharColor = new Dictionary<CharacterState, ConsoleColor>()
+  // {
+  //   {CharacterState.notSelected,ConsoleColor.Green},
+  //   {CharacterState.selectedAsElement,ConsoleColor.Black},
+  //   {CharacterState.selectedAsChar,ConsoleColor.Black}
+  // };
+  // static public Dictionary<CharacterState, ConsoleColor> CharStateToBackgroundColor = new Dictionary<CharacterState, ConsoleColor>()
+  // {
+  //   {CharacterState.notSelected,ConsoleColor.Black},
+  //   {CharacterState.selectedAsElement,ConsoleColor.Green},
+  //   {CharacterState.selectedAsChar,ConsoleColor.Blue}
+  // };
+  static public Dictionary<CharacterState, Brush> StateToBrush = new Dictionary<CharacterState, Brush>()
   {
-    {CharacterState.notSelected,ConsoleColor.Green},
-    {CharacterState.selectedAsElement,ConsoleColor.Black},
-    {CharacterState.selectedAsChar,ConsoleColor.Black}
-  };
-  static public Dictionary<CharacterState, ConsoleColor> CharStateToBackgroundColor = new Dictionary<CharacterState, ConsoleColor>()
-  {
-    {CharacterState.notSelected,ConsoleColor.Black},
-    {CharacterState.selectedAsElement,ConsoleColor.Green},
-    {CharacterState.selectedAsChar,ConsoleColor.Blue}
+    {CharacterState.notSelected,new Brush(ConsoleColor.Black,ConsoleColor.Green)},
+    {CharacterState.selectedAsElement,new Brush(ConsoleColor.Green,ConsoleColor.Black)},
+    {CharacterState.selectedAsChar,new Brush(ConsoleColor.Blue,ConsoleColor.Black)}
   };
 }
 public enum CharacterState

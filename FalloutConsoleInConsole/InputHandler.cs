@@ -33,48 +33,45 @@ public class InputHandler
     }
     return ExecutionCode.WrongInput;
   }
-
-  static int xCursorPos = 0;
-  static int yCursorPos = 0;
-  public static int selectedColumn { get; private set; } = 0;
+  public int selectedColumn { get; private set; } = 0;
   static int width;
-  public static int selectedPos { get => xCursorPos + yCursorPos * width; private set { selectedPos = value; } }
+  public Coordinates cursorPos = new Coordinates(0, 0);
   Game game;
   public void HandleInput()
   {
     ConsoleKey key = Console.ReadKey().Key;
 
-    Element element = game.columns[selectedColumn].GetElement(selectedPos);
+    Element element = game.columns[selectedColumn].GetElement(cursorPos);
     switch (key)
     {
       case ConsoleKey.LeftArrow:
         {
-          xCursorPos--;
-          if (xCursorPos < 0)
+          cursorPos.x--;
+          if (cursorPos.x < 0)
           {
-            xCursorPos = game.COLUMN_WIDTH - 1;
+            cursorPos.x = game.COLUMN_WIDTH - 1;
             selectedColumn = Math.Max(0, selectedColumn - 1);
           }
           break;
         }
       case ConsoleKey.RightArrow:
         {
-          xCursorPos++;
-          if (xCursorPos > game.COLUMN_WIDTH - 1)
+          cursorPos.x++;
+          if (cursorPos.x > game.COLUMN_WIDTH - 1)
           {
-            xCursorPos = 0;
+            cursorPos.x = 0;
             selectedColumn = Math.Min(game.COLUMN_AMOUNT - 1, selectedColumn + 1);
           }
           break;
         }
       case ConsoleKey.UpArrow:
         {
-          yCursorPos = Math.Max(0, yCursorPos - 1);
+          cursorPos.y = Math.Max(0, cursorPos.y - 1);
           break;
         }
       case ConsoleKey.DownArrow:
         {
-          yCursorPos = Math.Min(game.COLUMN_HEIGHT - 1, yCursorPos + 1);
+          cursorPos.y = Math.Min(game.COLUMN_HEIGHT - 1, cursorPos.y + 1);
           break;
         }
       case ConsoleKey.Enter:
@@ -92,15 +89,15 @@ public class InputHandler
     {
       case ExecutionCode.HintLife:
         {
-          column.RemoveHint(element.index);
+          column.RemoveHint(element.coordinates);
           game.ResetAttempt();
           log = $"Tries Reset.";
           break;
         }
       case ExecutionCode.HintDuds:
         {
-          column.RemoveHint(element.index);
-          column.RemoveDud(selectedPos, rightWord);
+          column.RemoveHint(element.coordinates);
+          column.RemoveDud(rightWord);
           log = $">{element}\n>Dud Removed.";
           break;
         }

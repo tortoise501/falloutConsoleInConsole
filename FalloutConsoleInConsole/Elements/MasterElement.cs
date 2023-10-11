@@ -2,7 +2,7 @@ public class MasterElement : Element
 {
   public List<Element> slaveElements { get; protected set; }
   public int length { get; protected set; }
-  public MasterElement(char value, int index, List<Element>? slaveElements = null) : base(value, index)
+  public MasterElement(char value, Coordinates coordinates, List<Element>? slaveElements = null) : base(value, coordinates)
   {
     if (slaveElements == null)
     {

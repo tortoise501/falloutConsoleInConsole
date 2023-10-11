@@ -117,7 +117,7 @@ public class Game
     }
     while (true)
     {
-      columns[InputHandler.selectedColumn].PlaceCursorForFrame(InputHandler.selectedPos);
+      columns[inputHandler.selectedColumn].PlaceCursorForFrame(inputHandler.cursorPos);
       renderer.UpdateColumnRenderData();
       renderer.FastRender();
       if (gameState != GameState.InProgress)
