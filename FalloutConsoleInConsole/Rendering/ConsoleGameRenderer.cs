@@ -2,10 +2,17 @@ using System.Text;
 
 class ConsoleGameRenderer
 {
-  const int ConsoleWidth = 100;
-  const int ConsoleHeight = 20;
-  private RenderData[,] renderData = new RenderData[ConsoleHeight, ConsoleWidth];
+  readonly int ConsoleWidth;
+  readonly int ConsoleHeight;
+  private RenderData[,] renderData = new RenderData[0, 0];
   private List<IRenderable> objectsToRender = new List<IRenderable>();
+
+  public ConsoleGameRenderer(int consoleWidth = 100, int consoleHeight = 20)
+  {
+    ConsoleWidth = consoleWidth;
+    ConsoleHeight = consoleHeight;
+    renderData = new RenderData[ConsoleHeight, ConsoleWidth];
+  }
   public void UpdateColumnRenderData()
   {
     for (int i = 0; i < objectsToRender.Count(); i++)

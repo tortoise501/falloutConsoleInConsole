@@ -69,6 +69,7 @@ public class Game
   }
   public void Start()
   {
+    renderer = new ConsoleGameRenderer(COLUMN_AMOUNT * (COLUMN_WIDTH + 1 + ADDRESS_WIDTH + 1) + 20);
     isStarted = true;
     Console.Clear();
     Console.CursorVisible = false;
