@@ -307,6 +307,10 @@ public class Column : IRenderable
     }
     return element;
   }
+  public Element GetSymbolElement(Coordinates coordinates)
+  {
+    return columnByElements[coordinates.x, coordinates.y];
+  }
   // public string GetElementAsString(int pos)
   // {
   //   string res = columnByElements[pos].value.ToString();

@@ -41,25 +41,73 @@ public class InputHandler
   {
     ConsoleKey key = Console.ReadKey().Key;
 
-    Element element = game.columns[selectedColumn].GetElement(cursorPos);
+    Element element = game.columns[selectedColumn].GetSymbolElement(cursorPos);
     switch (key)
     {
       case ConsoleKey.LeftArrow:
         {
-          cursorPos.x--;
+          Element bringCursorTo = null;
+          if (element is Symbol && element.elementType == ElementType.Word)
+          {
+            List<Element> word = (element as Symbol).belongsToWord.slaveElements;
+            word.Add((element as Symbol).belongsToWord);
+            bringCursorTo = word.Where(slave => slave.coordinates.y == cursorPos.y).MinBy(slave => slave.coordinates.x);
+          }
+          if (bringCursorTo != null)
+          {
+            cursorPos.x = bringCursorTo.coordinates.x - 1;
+          }
+          else
+          {
+            cursorPos.x--;
+          }
           if (cursorPos.x < 0)
           {
-            cursorPos.x = game.COLUMN_WIDTH - 1;
+            if (selectedColumn != 0)
+            {
+              cursorPos.x = game.COLUMN_WIDTH - 1;
+            }
+            else
+            {
+              cursorPos.x = 0;
+            }
             selectedColumn = Math.Max(0, selectedColumn - 1);
           }
           break;
         }
       case ConsoleKey.RightArrow:
         {
-          cursorPos.x++;
+          if (element.elementType == ElementType.Word)
+          {
+            Element bringCursorTo = null;
+            if (element is Word)
+            {
+              bringCursorTo = (element as Word).slaveElements.Where(slave => slave.coordinates.y == cursorPos.y).MaxBy(slave => slave.coordinates.x);
+            }
+            else
+            {
+              bringCursorTo = (element as Symbol).belongsToWord.slaveElements.Where(slave => slave.coordinates.y == cursorPos.y).MaxBy(slave => slave.coordinates.x);
+            }
+
+            if (bringCursorTo != null)
+            {
+              cursorPos.x = bringCursorTo.coordinates.x + 1;
+            }
+          }
+          else
+          {
+            cursorPos.x++;
+          }
           if (cursorPos.x > game.COLUMN_WIDTH - 1)
           {
-            cursorPos.x = 0;
+            if (selectedColumn != game.COLUMN_AMOUNT - 1)
+            {
+              cursorPos.x = 0;
+            }
+            else
+            {
+              cursorPos.x = game.COLUMN_WIDTH - 1;
+            }
             selectedColumn = Math.Min(game.COLUMN_AMOUNT - 1, selectedColumn + 1);
           }
           break;
