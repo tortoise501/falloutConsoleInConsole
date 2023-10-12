@@ -33,48 +33,93 @@ public class InputHandler
     }
     return ExecutionCode.WrongInput;
   }
-
-  static int xCursorPos = 0;
-  static int yCursorPos = 0;
-  public static int selectedColumn { get; private set; } = 0;
+  public int selectedColumn { get; private set; } = 0;
   static int width;
-  public static int selectedPos { get => xCursorPos + yCursorPos * width; private set { selectedPos = value; } }
+  public Coordinates cursorPos = new Coordinates(0, 0);
   Game game;
   public void HandleInput()
   {
     ConsoleKey key = Console.ReadKey().Key;
 
-    Element element = game.columns[selectedColumn].GetElement(selectedPos);
+    Element element = game.columns[selectedColumn].GetSymbolElement(cursorPos);
     switch (key)
     {
       case ConsoleKey.LeftArrow:
         {
-          xCursorPos--;
-          if (xCursorPos < 0)
+          Element bringCursorTo = null;
+          if (element is Symbol && element.elementType == ElementType.Word)
           {
-            xCursorPos = game.COLUMN_WIDTH - 1;
+            List<Element> word = (element as Symbol).belongsToWord.slaveElements;
+            word.Add((element as Symbol).belongsToWord);
+            bringCursorTo = word.Where(slave => slave.coordinates.y == cursorPos.y).MinBy(slave => slave.coordinates.x);
+          }
+          if (bringCursorTo != null)
+          {
+            cursorPos.x = bringCursorTo.coordinates.x - 1;
+          }
+          else
+          {
+            cursorPos.x--;
+          }
+          if (cursorPos.x < 0)
+          {
+            if (selectedColumn != 0)
+            {
+              cursorPos.x = game.COLUMN_WIDTH - 1;
+            }
+            else
+            {
+              cursorPos.x = 0;
+            }
             selectedColumn = Math.Max(0, selectedColumn - 1);
           }
           break;
         }
       case ConsoleKey.RightArrow:
         {
-          xCursorPos++;
-          if (xCursorPos > game.COLUMN_WIDTH - 1)
+          if (element.elementType == ElementType.Word)
           {
-            xCursorPos = 0;
+            Element bringCursorTo = null;
+            if (element is Word)
+            {
+              bringCursorTo = (element as Word).slaveElements.Where(slave => slave.coordinates.y == cursorPos.y).MaxBy(slave => slave.coordinates.x);
+            }
+            else
+            {
+              bringCursorTo = (element as Symbol).belongsToWord.slaveElements.Where(slave => slave.coordinates.y == cursorPos.y).MaxBy(slave => slave.coordinates.x);
+            }
+
+            if (bringCursorTo != null)
+            {
+              cursorPos.x = bringCursorTo.coordinates.x + 1;
+            }
+          }
+          else
+          {
+            cursorPos.x++;
+          }
+          if (cursorPos.x > game.COLUMN_WIDTH - 1)
+          {
+            if (selectedColumn != game.COLUMN_AMOUNT - 1)
+            {
+              cursorPos.x = 0;
+            }
+            else
+            {
+              cursorPos.x = game.COLUMN_WIDTH - 1;
+            }
             selectedColumn = Math.Min(game.COLUMN_AMOUNT - 1, selectedColumn + 1);
           }
           break;
         }
       case ConsoleKey.UpArrow:
         {
-          yCursorPos = Math.Max(0, yCursorPos - 1);
+          cursorPos.y = Math.Max(0, cursorPos.y - 1);
           break;
         }
       case ConsoleKey.DownArrow:
         {
-          yCursorPos = Math.Min(game.COLUMN_HEIGHT - 1, yCursorPos + 1);
+          cursorPos.y = Math.Min(game.COLUMN_HEIGHT - 1, cursorPos.y + 1);
           break;
         }
       case ConsoleKey.Enter:
@@ -92,15 +137,15 @@ public class InputHandler
     {
       case ExecutionCode.HintLife:
         {
-          column.RemoveHint(element.index);
+          column.RemoveHint(element.coordinates);
           game.ResetAttempt();
           log = $"Tries Reset.";
           break;
         }
       case ExecutionCode.HintDuds:
         {
-          column.RemoveHint(element.index);
-          column.RemoveDud(selectedPos, rightWord);
+          column.RemoveHint(element.coordinates);
+          column.RemoveDud(rightWord);
           log = $">{element}\n>Dud Removed.";
           break;
         }

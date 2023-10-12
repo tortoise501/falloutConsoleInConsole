@@ -2,10 +2,17 @@ using System.Text;
 
 class ConsoleGameRenderer
 {
-  const int ConsoleWidth = 100;
-  const int ConsoleHeight = 20;
-  private RenderData[,] renderData = new RenderData[ConsoleHeight, ConsoleWidth];
+  readonly int ConsoleWidth;
+  readonly int ConsoleHeight;
+  private RenderData[,] renderData = new RenderData[0, 0];
   private List<IRenderable> objectsToRender = new List<IRenderable>();
+
+  public ConsoleGameRenderer(int consoleWidth = 100, int consoleHeight = 20)
+  {
+    ConsoleWidth = consoleWidth;
+    ConsoleHeight = consoleHeight;
+    renderData = new RenderData[ConsoleHeight, ConsoleWidth];
+  }
   public void UpdateColumnRenderData()
   {
     for (int i = 0; i < objectsToRender.Count(); i++)
@@ -46,8 +53,8 @@ class ConsoleGameRenderer
           continue;
         }
         RenderData character = renderData[y, x];
-        Console.BackgroundColor = Constants.CharStateToBackgroundColor[character.state];
-        Console.ForegroundColor = Constants.CharStateToBackgroundColor[character.state];
+        Console.BackgroundColor = Constants.StateToBrush[character.state].BackgroundBrushColor;
+        Console.ForegroundColor = Constants.StateToBrush[character.state].BrushColor;
         Console.Write(character.character);
       }
       Console.WriteLine();
@@ -75,13 +82,13 @@ class ConsoleGameRenderer
 
           if (sb.Capacity != 0)
           {
-            Console.BackgroundColor = Constants.CharStateToBackgroundColor[CharacterState.notSelected];
-            Console.ForegroundColor = Constants.CharStateToCharColor[CharacterState.notSelected];
+            Console.BackgroundColor = Constants.StateToBrush[CharacterState.notSelected].BackgroundBrushColor;
+            Console.ForegroundColor = Constants.StateToBrush[CharacterState.notSelected].BrushColor;
             Console.Write(sb);
             sb.Clear();
           }
-          Console.BackgroundColor = Constants.CharStateToBackgroundColor[character.state];
-          Console.ForegroundColor = Constants.CharStateToCharColor[character.state];
+          Console.BackgroundColor = Constants.StateToBrush[character.state].BackgroundBrushColor;
+          Console.ForegroundColor = Constants.StateToBrush[character.state].BrushColor;
           Console.Write(character.character);
         }
         else
@@ -92,8 +99,8 @@ class ConsoleGameRenderer
       }
       if (sb.Length != 0)
       {
-        Console.BackgroundColor = Constants.CharStateToBackgroundColor[CharacterState.notSelected];
-        Console.ForegroundColor = Constants.CharStateToCharColor[CharacterState.notSelected];
+        Console.BackgroundColor = Constants.StateToBrush[CharacterState.notSelected].BackgroundBrushColor;
+        Console.ForegroundColor = Constants.StateToBrush[CharacterState.notSelected].BrushColor;
         Console.Write(sb);
       }
       Console.WriteLine();
