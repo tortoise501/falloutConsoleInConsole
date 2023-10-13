@@ -178,30 +178,16 @@ public class Column : IRenderable
         {
           column[x, y] = new Word(words[wordI][0], new Coordinates(x, y), words[wordI]);
           Word masterElement = (Word)column[x, y];
-          // for (int c = 1; c < words[wordI].Length; c++)
-          // {
-          //   x++;
-          //   if (x == width && y < height - 1)
-          //   {
-          //     x = 0;
-          //     y++;
-          //   }
-          //   column[x, y] = new Symbol(words[wordI][c], new Coordinates(x, y), masterElement);
-          //   masterElement.AddSlaveElement(column[x, y]);
-          // }
           for (int c = 1; c < words[wordI].Length; c++)
           {
             x++;
-            if (x == width)
+            if (x == width && y < height - 1)
             {
               x = 0;
               y++;
             }
-            if (y < height)
-            {
-              column[x, y] = new Symbol(words[wordI][c], new Coordinates(x, y), masterElement);
-              masterElement.AddSlaveElement(column[x, y]);
-            }
+            column[x, y] = new Symbol(words[wordI][c], new Coordinates(x, y), masterElement);
+            masterElement.AddSlaveElement(column[x, y]);
           }
           wordI++;
         }

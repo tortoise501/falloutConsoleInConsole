@@ -49,9 +49,14 @@ public class InputHandler
           Element bringCursorTo = null;
           if (element is Symbol && element.elementType == ElementType.Word)
           {
-            List<Element> word = (element as Symbol).belongsToWord.slaveElements;
-            word.Add((element as Symbol).belongsToWord);
-            bringCursorTo = word.Where(slave => slave.coordinates.y == cursorPos.y).MinBy(slave => slave.coordinates.x);
+            if ((element as Symbol).belongsToWord.coordinates.y == cursorPos.y)
+            {
+              bringCursorTo = (element as Symbol).belongsToWord;
+            }
+            else
+            {
+              bringCursorTo = (element as Symbol).belongsToWord.slaveElements.Where(slave => slave.coordinates.y == cursorPos.y).MinBy(slave => slave.coordinates.x);
+            }
           }
           if (bringCursorTo != null)
           {
@@ -130,6 +135,7 @@ public class InputHandler
           break;
         }
     }
+    game.SetSelectedElement(game.columns[selectedColumn].GetElement(cursorPos).ToString());
   }
   public string ExecuteCodeAndReturnLogs(ExecutionCode code, Element element, Column column)
   {
@@ -155,7 +161,7 @@ public class InputHandler
           game.LooseAttempt();
           try
           {
-            log = $">{(element as Word).word}\n>Entry denied.\n>Likeness={CheckForLikeness((element as Word).word)}";
+            log = $">{element}\n>Entry denied.\n>Likeness={CheckForLikeness(element.ToString())}";
           }
           catch (Exception exception)
           {

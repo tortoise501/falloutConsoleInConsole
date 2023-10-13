@@ -181,6 +181,10 @@ public class Game
     }
     gameLogger.AddGameLogs(log);
   }
+  public void SetSelectedElement(string elementStr)
+  {
+    gameLogger.SetSelectedElement(elementStr);
+  }
   private string[] GenerateRandomWords(int amount = 6, int length = 6)
   {
     HashSet<string> res = new HashSet<string>();
