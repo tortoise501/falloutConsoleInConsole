@@ -1,7 +1,7 @@
 public abstract class Element
 {
   public ElementType elementType { get; set; }
-  public char value { get; set; }
+  public char value { get; set; } = ' ';
   public Coordinates coordinates;
   public Element(char value, Coordinates coordinates)
   {

@@ -20,7 +20,7 @@ public class MasterElement : Element
   public override string ToString()
   {
     string slavesString = "";
-    slaveElements.ForEach(x => slavesString += x);
+    slaveElements.ForEach(x => slavesString += x.value.ToString());
     return value.ToString() + slavesString;
   }
 }

@@ -124,6 +124,7 @@ public class InputHandler
         }
       case ConsoleKey.Enter:
         {
+          element = game.columns[selectedColumn].GetElement(cursorPos);
           string log = ExecuteCodeAndReturnLogs(GetExecutionCodeForElement(element), element, game.columns[selectedColumn]);
           game.AddLog(log);
           break;
@@ -153,6 +154,10 @@ public class InputHandler
         {
           game.LooseAttempt();
           log = $">{element}\n>Entry denied.\n>Likeness={CheckForLikeness(element.ToString())}";
+          if (game.attempts.attemptsLeft == 0)
+          {
+            log += $">\n>Lockout in\n>progress";
+          }
           break;
         }
       case ExecutionCode.CorrectWord:

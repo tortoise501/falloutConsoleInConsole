@@ -65,8 +65,26 @@ public class Game
     if (update)
     {
       Update();
+      if (gameState == GameState.Won)
+      {
+        Console.WriteLine("You won!!!");
+      }
+      else
+      {
+        Console.WriteLine("You lost :(");
+      }
+      Console.WriteLine("Press any key to leave the game");
+      Console.ReadKey();
     }
+
   }
+  public /*async*/ void EndGame()
+  {
+    // await Task.Delay(2000);
+    Console.Clear();
+    isUpdating = false;
+  }
+  bool isUpdating = false;
   public void Start()
   {
     renderer = new ConsoleGameRenderer(COLUMN_AMOUNT * (COLUMN_WIDTH + 1 + ADDRESS_WIDTH + 1) + 20);
@@ -116,16 +134,17 @@ public class Game
     {
       return false;
     }
-    while (true)
+    isUpdating = true;
+    while (isUpdating)
     {
       columns[inputHandler.selectedColumn].PlaceCursorForFrame(inputHandler.cursorPos);
       renderer.UpdateColumnRenderData();
       renderer.FastRender();
+      HandleInput();
       if (gameState != GameState.InProgress)
       {
-        break;
+        EndGame();
       }
-      HandleInput();
     }
     return true;
   }

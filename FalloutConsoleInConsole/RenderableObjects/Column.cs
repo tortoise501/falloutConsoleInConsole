@@ -346,7 +346,7 @@ public class Column : IRenderable
         }
         if (element is Hint && element.coordinates == cursorPos && isColumnSelected)
         {
-          saveBrushCount = (element as Hint).slaveElements.Count();
+          saveBrushCount = (element as Hint).slaveElements.Count() + 1;
         }
         if (element.coordinates == cursorPos && isColumnSelected)
         {
