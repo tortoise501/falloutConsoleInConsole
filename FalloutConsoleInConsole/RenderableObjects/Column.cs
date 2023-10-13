@@ -21,10 +21,12 @@ public class Column : IRenderable
   // int selectorPos = 0;
   Coordinates cursorPos = new Coordinates(0, 0);
   bool isColumnSelected = false;
+  int tempWordLength;//!temp
   public Column(int width, int height, int wordLength, int wordAmount, string[] words, int y = 0, int x = 0, int hintAmount = 4, int resetAttemptsHintAmount = 0)
   {
     ((IRenderable)this).x = x;
     ((IRenderable)this).y = y;
+    tempWordLength = wordLength;
 
     columnWidth = width;
     columnHeight = height;
@@ -152,7 +154,6 @@ public class Column : IRenderable
 
   private Element[,] GenerateColumn(string[] words, int width = 12, int height = 16, int wordLength = 4, int wordAmount = 6)
   {
-    // int length = (height * width);
     Element[,] column = new Element[width, height];
     int wordI = 0;
     HashSet<Coordinates> randomWordPos = new HashSet<Coordinates>();
@@ -160,7 +161,7 @@ public class Column : IRenderable
     {
       int rndY = rnd.Next(height / wordAmount * i, height / wordAmount * (i + 1));
       int rndX = rnd.Next(rndY == height / wordAmount * (i + 1) - 1 ? width - 1 - wordLength : width);
-      Coordinates pos = new Coordinates(rndX, rndY);// rnd.Next((length / wordAmount) * i, (length / wordAmount) * (i + 1) - wordLength + 1);
+      Coordinates pos = new Coordinates(rndX, rndY);
       if (randomWordPos.Contains(pos))
       {
         i--;
@@ -177,16 +178,30 @@ public class Column : IRenderable
         {
           column[x, y] = new Word(words[wordI][0], new Coordinates(x, y), words[wordI]);
           Word masterElement = (Word)column[x, y];
+          // for (int c = 1; c < words[wordI].Length; c++)
+          // {
+          //   x++;
+          //   if (x == width && y < height - 1)
+          //   {
+          //     x = 0;
+          //     y++;
+          //   }
+          //   column[x, y] = new Symbol(words[wordI][c], new Coordinates(x, y), masterElement);
+          //   masterElement.AddSlaveElement(column[x, y]);
+          // }
           for (int c = 1; c < words[wordI].Length; c++)
           {
             x++;
-            if (x == width && y < height - 1)
+            if (x == width)
             {
               x = 0;
               y++;
             }
-            column[x, y] = new Symbol(words[wordI][c], new Coordinates(x, y), masterElement);
-            masterElement.AddSlaveElement(column[x, y]);
+            if (y < height)
+            {
+              column[x, y] = new Symbol(words[wordI][c], new Coordinates(x, y), masterElement);
+              masterElement.AddSlaveElement(column[x, y]);
+            }
           }
           wordI++;
         }
@@ -205,9 +220,8 @@ public class Column : IRenderable
   {
     for (int i = 0; i < hintAmount; i++)//!Possible infinite loops
     {
-      List<Element> test = columnByElements.Cast<Element>().ToList();
-      test.ForEach(x => Console.Write(x));
-      List<Element> posPullForRandomHints = test.Where(x => x.elementType == ElementType.Symbol && (x.coordinates.x + 1) != rowWidth - 1).ToList();
+      List<Element> oneDimensionalList = columnByElements.Cast<Element>().ToList();
+      List<Element> posPullForRandomHints = oneDimensionalList.Where(x => x.elementType == ElementType.Symbol && (x.coordinates.x + 1) != rowWidth - 1).ToList();
       int pos = rnd.Next(0, posPullForRandomHints.Count() / hintAmount + posPullForRandomHints.Count() / hintAmount * i);
       posPullForRandomHints[pos].value = '\ufffd';
     }
@@ -297,7 +311,6 @@ public class Column : IRenderable
 
 
 
-
   public Element GetElement(Coordinates coordinates)
   {
     Element element = columnByElements[coordinates.x, coordinates.y];
@@ -378,4 +391,18 @@ public class Column : IRenderable
 
   int IRenderable.x { get; set; }
   int IRenderable.y { get; set; }
+
+  public override string ToString()
+  {
+    string res = "";// = String.Join(' ', columnByElements.Cast<Element>().ToList().Where(el => el is Word).ToString());
+    for (int y = 0; y < columnWidth; y++)
+    {
+      for (int x = 0; x < columnWidth; x++)
+      {
+        res += $"{columnByElements[x, y].ToString()} ";
+      }
+      res += "\n";
+    }
+    return res;
+  }
 }

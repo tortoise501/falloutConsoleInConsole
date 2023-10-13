@@ -153,7 +153,15 @@ public class InputHandler
       case ExecutionCode.Mistake:
         {
           game.LooseAttempt();
-          log = $">{element}\n>Entry denied.\n>Likeness={CheckForLikeness(element.ToString())}";
+          try
+          {
+            log = $">{(element as Word).word}\n>Entry denied.\n>Likeness={CheckForLikeness((element as Word).word)}";
+          }
+          catch (Exception exception)
+          {
+            string exceptionStr = exception.Message;
+            exceptionStr = exception.Message;
+          }
           if (game.attempts.attemptsLeft == 0)
           {
             log += $">\n>Lockout in\n>progress";
@@ -177,7 +185,7 @@ public class InputHandler
   {
     if (word.Length != rightWord.Length)
     {
-      throw new Exception("Stupid chat gpt exception");
+      throw new Exception($"Stupid chat gpt exception, right word = {rightWord}, word = {word}");
     }
     int res = 0;
     for (int i = 0; i < word.Length; i++)

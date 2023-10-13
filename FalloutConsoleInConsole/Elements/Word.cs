@@ -6,4 +6,5 @@ public class Word : MasterElement
     this.word = word;
     elementType = ElementType.Word;
   }
+
 }

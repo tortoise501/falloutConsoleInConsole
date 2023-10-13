@@ -13,6 +13,10 @@ public class MasterElement : Element
   }
   public void AddSlaveElement(Element element)
   {
+    if (element is Word && this is Word)
+    {
+      throw new Exception("okPonException");
+    }
     slaveElements.Add(element);
     element.elementType = elementType == ElementType.Word ? ElementType.Word : element.elementType;
     length++;
@@ -20,7 +24,7 @@ public class MasterElement : Element
   public override string ToString()
   {
     string slavesString = "";
-    slaveElements.ForEach(x => slavesString += x.value.ToString());
+    slaveElements.Select(x => slavesString += x.value.ToString());
     return value.ToString() + slavesString;
   }
 }
