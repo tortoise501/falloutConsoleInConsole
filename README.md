@@ -1,4 +1,4 @@
 # falloutConsoleInConsole
-<a href="https://github.com/tortoise501/falloutConsoleInConsole/releases/tag/beta-Win">Window version</a>
+<a href="https://github.com/tortoise501/falloutConsoleInConsole/releases/tag/Windows">Window version</a>
 <br>
-<a href="https://github.com/tortoise501/falloutConsoleInConsole/releases/tag/beta-linux">Linux Version</a>
+<a href="https://github.com/tortoise501/falloutConsoleInConsole/releases/tag/Linux">Linux Version</a>
